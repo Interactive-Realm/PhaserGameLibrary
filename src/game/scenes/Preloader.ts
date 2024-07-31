@@ -30,10 +30,16 @@ export class Preloader extends Scene
     preload ()
     {
         //  Load the assets for the game - Replace with your own assets
-        this.load.setPath('assets');
-
-        this.load.image('logo', 'logo.png');
-        this.load.image('star', 'star.png');
+        this.load.setPath('public/assets');
+        this.load.image('player', 'car.png');
+        this.load.image('haybale', 'haybale.png');
+        this.load.image('tire', 'cartire.png');
+        this.load.image('roadline', 'roadline.png');
+        this.load.image('spawnline', 'spawnline.png');
+        this.load.image('instructions', 'instructions.png');
+        this.load.image('cone', 'trafficcone.png');
+        this.load.audio('music', 'night-ride-mountaineer.mp3');
+        this.load.audio('crash', 'crash.mp3');
     }
 
     create ()
@@ -42,6 +48,6 @@ export class Preloader extends Scene
         //  For example, you can define global animations here, so we can use them in other scenes.
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        this.scene.start('MainMenu');
+        this.scene.start('Game');
     }
 }
