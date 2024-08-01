@@ -9,5 +9,14 @@ export default defineConfig({
     ],
     server: {
         port: 8080
-    }
+    },
+    build: {
+        lib: {
+          // Could also be a dictionary or array of multiple entry points
+          entry: resolve(__dirname, 'src/index.ts'),
+          name: 'PhaserLib',
+          // the proper extensions will be added
+          fileName: 'index.ts',
+        },
+    },
 })

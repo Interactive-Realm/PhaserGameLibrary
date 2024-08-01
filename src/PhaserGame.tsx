@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
-import StartGame from './main';
+import StartGame from './Games/SoapboxShowdown/main';
 import { EventBus } from './EventBus';
 
 export interface IRefPhaserGame

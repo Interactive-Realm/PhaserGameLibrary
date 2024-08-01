@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { resolve } from 'path';
 import react from '@vitejs/plugin-react';
 
 const phasermsg = () => {
@@ -25,12 +26,12 @@ export default defineConfig({
     ],
     logLevel: 'warning',
     build: {
-        rollupOptions: {
-            output: {
-                manualChunks: {
-                    phaser: ['phaser']
-                }
-            }
+        lib: {
+            // Could also be a dictionary or array of multiple entry points
+            entry: resolve(__dirname, '../src/index.ts'),
+            name: 'PhaserLib',
+            // the proper extensions will be added
+            fileName: 'index',
         },
         minify: 'terser',
         terserOptions: {
@@ -41,6 +42,7 @@ export default defineConfig({
             format: {
                 comments: false
             }
-        }
+        },
+
     }
 });
