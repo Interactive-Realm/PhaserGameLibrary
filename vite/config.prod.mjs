@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import react from '@vitejs/plugin-react';
+import dts from 'vite-plugin-dts';
 
 const phasermsg = () => {
     return {
@@ -22,7 +23,8 @@ export default defineConfig({
     base: './',
     plugins: [
         react(),
-        phasermsg()
+        phasermsg(),
+        dts()
     ],
     logLevel: 'warning',
     build: {

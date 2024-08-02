@@ -19,8 +19,12 @@
     "strictPropertyInitialization": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    "declaration": true,
+    "outDir": "dist",
+    "typeRoots": ["./dist/index.d.ts"]
   },
-  "include": ["src"],
+  "include": ["src", "./index.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
