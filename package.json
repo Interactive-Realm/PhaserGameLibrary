@@ -1,7 +1,7 @@
 {
     "name": "@interactive-realm/phasergamelibrary",
     "description": "A Phaser 3 TypeScript project template that demonstrates React communication and uses Vite for bundling.",
-    "version": "0.7.0",
+    "version": "0.16.0",
     "files": [
         "dist"
     ],
