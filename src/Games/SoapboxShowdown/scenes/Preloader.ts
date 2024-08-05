@@ -1,8 +1,9 @@
 import { Scene } from 'phaser';
+import {pathRef} from '../../../assetData';
 
 export class Preloader extends Scene
 {
-    constructor ()
+    constructor (customAssets: boolean)
     {
         super('Preloader');
     }
@@ -27,10 +28,15 @@ export class Preloader extends Scene
         });
     }
 
+    
+
     preload ()
     {
-        //  Load the assets for the game - Replace with your own assets
-        this.load.setPath('assets');
+        
+        
+         //  Load the assets for the game - Replace with your own assets
+        this.load.setPath(pathRef);
+
         this.load.image('player', 'car.png');
         this.load.image('haybale', 'haybale.png');
         this.load.image('tire', 'cartire.png');
@@ -49,5 +55,6 @@ export class Preloader extends Scene
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         this.scene.start('Game');
+        
     }
 }

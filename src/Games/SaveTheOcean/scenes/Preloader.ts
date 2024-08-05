@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import {pathRef} from '../../../assetData';
 
 export class Preloader extends Scene
 {
@@ -30,7 +31,7 @@ export class Preloader extends Scene
     preload ()
     {
         //  Load the assets for the game - Replace with your own assets
-        this.load.setPath('src/Game/assets');
+        this.load.setPath(pathRef);
 
         this.load.image('knife', 'ButterKnife_128x128.png');
         this.load.image('fork', 'Fork_128x128.png');

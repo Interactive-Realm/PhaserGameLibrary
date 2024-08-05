@@ -71,6 +71,8 @@ export class Game extends Scene
         this.gameEnded = false;
         this.nightRide = this.sound.add('music');
         this.crash = this.sound.add('crash');
+
+        
     }
     
     init(data: any) {
