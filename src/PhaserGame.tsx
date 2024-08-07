@@ -1,5 +1,7 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
-import StartGame from './Games/SoapboxShowdown/main';
+import {StartSoapbox} from './Games/SoapboxShowdown/main';
+import { StartFlappy } from './Games/FlappyBird/main';
+import { StartOcean } from './Games/SaveTheOcean/main';
 import { EventBus } from './EventBus';
 
 export interface IRefPhaserGame
@@ -22,7 +24,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(function PhaserGame
         if (game.current === null)
         {
 
-            game.current = StartGame("game-container");
+            game.current = StartFlappy("game-container", true);
 
             if (typeof ref === 'function')
             {

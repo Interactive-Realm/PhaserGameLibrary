@@ -30,4 +30,4 @@ const StartGame = (parent: string, customAssets: boolean) => {
     
 }
 
-export default StartGame;
+export {StartGame as StartFlappy};

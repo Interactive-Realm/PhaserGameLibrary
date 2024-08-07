@@ -79,7 +79,7 @@ export class Game extends Scene
         this.gameStarted = false;
 
         // Load Spritesheet
-        this.load.spritesheet('Flappy', 'src/Game/assets/Bird_1_spritesheet.png', { frameWidth: 124, frameHeight: 100});
+        this.load.spritesheet('Flappy', 'src/Games/FlappyBird/assets/Bird_1_spritesheet.png', { frameWidth: 124, frameHeight: 100});
     }
 
     create ()

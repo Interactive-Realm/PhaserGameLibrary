@@ -39,7 +39,7 @@ export class Game extends Scene
     private nightRide: Phaser.Sound.BaseSound;
     private crash: Phaser.Sound.BaseSound;
 
-
+    // Movement
     updatePlayerPosition: Function;
     cursorIsBeingHeld: boolean;
     
