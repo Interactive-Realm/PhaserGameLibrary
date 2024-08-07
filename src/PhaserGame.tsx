@@ -1,82 +1,60 @@
-import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
+import { forwardRef, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {StartSoapbox} from './Games/SoapboxShowdown/main';
 import { StartFlappy } from './Games/FlappyBird/main';
 import { StartOcean } from './Games/SaveTheOcean/main';
 import { EventBus } from './EventBus';
+import GameOver from './GameOver';
+import { Screen } from '@interactive-realm/basepatternutilities';
 
-export interface IRefPhaserGame
-{
-    game: Phaser.Game | null;
-    scene: Phaser.Scene | null;
+interface Props {
+    setScreen: React.Dispatch<React.SetStateAction<Screen>>;
 }
 
-interface IProps
-{
-    currentActiveScene?: (scene_instance: Phaser.Scene) => void
-}
-
-export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(function PhaserGame({ currentActiveScene }, ref)
+const PhaserGame: React.FC<Props> = ({ setScreen }) =>
 {
     const game = useRef<Phaser.Game | null>(null!);
+    const [gameEnd, setGameEnd] = useState(false);
 
     useLayoutEffect(() =>
     {
-        if (game.current === null)
+        if (game.current === null && gameEnd == false)
         {
 
             game.current = StartFlappy("game-container", true);
-
-            if (typeof ref === 'function')
-            {
-                ref({ game: game.current, scene: null });
-            } else if (ref)
-            {
-                ref.current = { game: game.current, scene: null };
-            }
-
         }
+
 
         return () =>
         {
-            if (game.current)
+            if (game.current && gameEnd == true)
             {
+                console.log("Game Current return: " + game.current)
                 game.current.destroy(true);
                 if (game.current !== null)
                 {
                     game.current = null;
+                    console.log("Game Current destroyed return: " + game.current)
                 }
             }
         }
-    }, [ref]);
+    });
 
-    useEffect(() =>
-    {
-        EventBus.on('current-scene-ready', (scene_instance: Phaser.Scene) =>
-        {
-            if (currentActiveScene && typeof currentActiveScene === 'function')
-            {
-
-                currentActiveScene(scene_instance);
-
-            }
-
-            if (typeof ref === 'function')
-            {
-                ref({ game: game.current, scene: scene_instance });
-            } else if (ref)
-            {
-                ref.current = { game: game.current, scene: scene_instance };
-            }
-            
-        });
-        return () =>
-        {
-            EventBus.removeListener('current-scene-ready');
-        }
-    }, [currentActiveScene, ref]);
+    // Subscribe to gameHasEnded updates
+    EventBus.on("gameHasEnded", (data: boolean) => {
+        console.log("GameHasEnded Event is triggered")
+        setGameEnd(data);           
+    });
 
     return (
-        <div id="game-container"></div>
+        <>
+        {gameEnd? (
+            <GameOver onGameOver={() => setScreen("game")}/> // If phaser game is over, show Game Over screen
+        ):(
+            <div id="game-container"></div> // Else show div container for phaser game
+        )}
+        </>
     );
 
-});
+};
+
+export default PhaserGame;

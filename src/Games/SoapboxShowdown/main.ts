@@ -30,4 +30,4 @@ const StartGame = (parent: string, customAssets: boolean) => {
     
 }
 
-export {StartGame as StartFlappy};
+export {StartGame as StartSoapbox};

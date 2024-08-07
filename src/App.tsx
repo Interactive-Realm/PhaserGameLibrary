@@ -1,20 +1,24 @@
 import { useRef, useState } from 'react';
-import { IRefPhaserGame, PhaserGame } from './PhaserGame';
+import PhaserGame from './PhaserGame';
+import { Screen } from '@interactive-realm/basepatternutilities';
+
 
 function App()
 {
 
-    //  References to the PhaserGame component (game and scene are exposed)
-    const phaserRef = useRef<IRefPhaserGame | null>(null);
+    const [screen, setScreen] = useState<Screen>('game');
 
-    // Event emitted from the PhaserGame component
-    const currentScene = (scene: Phaser.Scene) => {
-        
+    let component;
+    switch (screen) {
+
+        case "game":
+            component = <PhaserGame setScreen={setScreen}/>;
+            break;
     }
 
     return (
         <div id="app">
-            <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
+            {component}
         </div>
     )
 }

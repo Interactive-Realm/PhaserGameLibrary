@@ -40,10 +40,7 @@ export class Preloader extends Scene
         this.load.image('PipeSpawnInterval', 'invisible.png');
         this.load.image('Floor', 'ParallaxFloor_1920x288.png');
         this.load.image('Killline', 'verticalKilLine.png');
-        this.load.image('Spritesheet', 'Bird_1_spritesheet.png');
-
-        // // Spritesheet preload for animation
-        // this.load.spritesheet('Flappy', 'Spritesheet', { frameWidth: 124, frameHeight: 100});
+        this.load.spritesheet('Spritesheet', 'Bird_1_spritesheet.png', { frameWidth: 124, frameHeight: 100});
 
     }
 

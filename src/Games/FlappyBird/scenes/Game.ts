@@ -77,9 +77,6 @@ export class Game extends Scene
         this.gravitySet = false;
         this.loadedFont = false;
         this.gameStarted = false;
-
-        // Load Spritesheet
-        this.load.spritesheet('Flappy', 'src/Games/FlappyBird/assets/Bird_1_spritesheet.png', { frameWidth: 124, frameHeight: 100});
     }
 
     create ()
@@ -144,7 +141,7 @@ export class Game extends Scene
         // Player animation setup
         this.anims.create({
             key: 'introFlap',
-            frames: this.anims.generateFrameNumbers('Flappy', { start: 0, end: 7}),
+            frames: this.anims.generateFrameNumbers('Spritesheet', { start: 0, end: 7}),
             frameRate: 9
         });
 

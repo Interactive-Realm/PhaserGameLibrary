@@ -59,7 +59,6 @@ const PhaserGame: React.FC<Props> = ({ setScreen }) =>
         ):(
             <div id="game-container"></div> // Else show div container for phaser game
         )}
-        
         </>
     );
 
