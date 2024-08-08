@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {StartSoapbox} from '../Games/SoapboxShowdown/main';
-import { StartFlappy } from '../Games/FlappyBird/main';
-import { StartOcean } from '../Games/SaveTheOcean/main';
+import {StartGameSoapbox} from '../Games/SoapboxShowdown/main';
+import { StartGameFlappy } from '../Games/FlappyBird/main';
+import { StartGameOcean } from '../Games/SaveTheOcean/main';
 import { EventBus } from '../EventBus';
 import GameOver from '../GameOver';
 import { Screen } from '@interactive-realm/basepatternutilities';
@@ -20,7 +20,7 @@ const PhaserGame: React.FC<Props> = ({ setScreen }) =>
         if (game.current === null && gameEnd == false)
         {
 
-            game.current = StartFlappy("game-container", true);
+            game.current = StartGameFlappy("game-container", true);
         }
 
 
