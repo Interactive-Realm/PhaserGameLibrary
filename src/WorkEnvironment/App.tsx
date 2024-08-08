@@ -13,6 +13,11 @@ function App()
 
         case "game":
             component = <PhaserGame setScreen={setScreen}/>;
+            
+            break;
+
+        case "pregame":
+            component = <PhaserGame setScreen={setScreen}/>;
             break;
     }
 

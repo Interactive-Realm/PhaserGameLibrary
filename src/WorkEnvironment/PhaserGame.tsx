@@ -41,14 +41,15 @@ const PhaserGame: React.FC<Props> = ({ setScreen }) =>
 
     // Subscribe to gameHasEnded updates
     EventBus.on("gameHasEnded", (data: boolean) => {
-        console.log("GameHasEnded Event is triggered")
+        console.log("GameHasEnded Event is triggered");
         setGameEnd(data);           
     });
 
     return (
         <>
         {gameEnd? (
-            <GameOver onGameOver={() => setScreen("game")}/> // If phaser game is over, show Game Over screen
+            <GameOver onGameOver={() => window.location.reload()
+            }/> // If phaser game is over, show Game Over screen
         ):(
             <div id="game-container"></div> // Else show div container for phaser game
         )}

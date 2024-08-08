@@ -13,7 +13,7 @@ const GameOver: React.FC<FrontPageProps> = ({ onGameOver }) => {
 
     const handleButtonClick = () => {
 
-        onGameOver(false)
+        onGameOver(true)
 
     };
 
