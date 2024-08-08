@@ -3,7 +3,6 @@ import {StartGameSoapbox} from '../Games/SoapboxShowdown/main';
 import { StartGameFlappy } from '../Games/FlappyBird/main';
 import { StartGameOcean } from '../Games/SaveTheOcean/main';
 import { EventBus } from '../EventBus';
-import GameOver from '../GameOver';
 import { Screen } from '@interactive-realm/basepatternutilities';
 
 interface Props {
@@ -42,18 +41,12 @@ const PhaserGame: React.FC<Props> = ({ setScreen }) =>
     // Subscribe to gameHasEnded updates
     EventBus.on("gameHasEnded", (data: boolean) => {
         console.log("GameHasEnded Event is triggered");
-        setGameEnd(data);           
+        setGameEnd(data);      
+        window.location.reload();     
     });
 
-    return (
-        <>
-        {gameEnd? (
-            <GameOver onGameOver={() => window.location.reload()
-            }/> // If phaser game is over, show Game Over screen
-        ):(
-            <div id="game-container"></div> // Else show div container for phaser game
-        )}
-        </>
+    return (      
+        <div id="game-container"></div> // Else show div container for phaser game
     );
 
 };

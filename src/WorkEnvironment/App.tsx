@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import PhaserGame from './PhaserGame';
+import PhaserGame from './GameHandler';
 import { Screen } from '@interactive-realm/basepatternutilities';
 
 
