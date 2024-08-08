@@ -72,6 +72,8 @@ export class Game extends Scene
 
         
 
+        
+
         // Booleans
         this.gameStarted = false; 
         this.gravitySet = false;
@@ -299,6 +301,8 @@ export class Game extends Scene
 
     // Game end
     endGame = () => {
+
+        let scene = this.scene;
         console.log("Game Start: " + this.gameStarted);
         if(this.gameStarted){
             this.gameStarted = false; // Resetting boolean for new game
@@ -314,6 +318,7 @@ export class Game extends Scene
                 delay: 2000, 
                 callback: function() {
                     EventBus.emit('gameHasEnded', true);
+                    scene.remove();
                 },
                 callbackScope: this,
                 loop: false
