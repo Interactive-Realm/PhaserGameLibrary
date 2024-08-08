@@ -35,4 +35,4 @@ const StartGame = (parent: string, customAssets: boolean) => {
 
 }
 
-export {StartGame as StartOcean};
+export {StartGame as StartGameOcean};
