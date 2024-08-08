@@ -1,9 +1,9 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {StartSoapbox} from './Games/SoapboxShowdown/main';
-import { StartFlappy } from './Games/FlappyBird/main';
-import { StartOcean } from './Games/SaveTheOcean/main';
-import { EventBus } from './EventBus';
-import GameOver from './GameOver';
+import {StartSoapbox} from '../Games/SoapboxShowdown/main';
+import { StartFlappy } from '../Games/FlappyBird/main';
+import { StartOcean } from '../Games/SaveTheOcean/main';
+import { EventBus } from '../EventBus';
+import GameOver from '../GameOver';
 import { Screen } from '@interactive-realm/basepatternutilities';
 
 interface Props {
