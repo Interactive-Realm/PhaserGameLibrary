@@ -26,11 +26,11 @@ const config: Phaser.Types.Core.GameConfig = {
     backgroundColor: 0x7699c6
 };
 
-const _StartGame = (parent: string, customAssets: boolean) => {
+const StartGame = (parent: string, customAssets: boolean) => {
 
     pathSelector(customAssets);
     return new Phaser.Game({ ...config, parent });
 
 }
 
-export default _StartGame;
+export {StartGame as StartGameFlappy};
