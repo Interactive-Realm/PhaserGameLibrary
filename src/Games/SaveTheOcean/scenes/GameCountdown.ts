@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { EventBus } from '../EventBus';
+import { EventBus } from '../../../EventBus';
 
 export class GameCountdown extends Phaser.Scene {
     private countdownText!: Phaser.GameObjects.Text;
