@@ -8,10 +8,10 @@ import { pathSelector } from '../../assetData';
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
-    width: 1024,
-    height: 768,
+    width: 1920,
+    height: 1080,
     parent: 'game-container',
-    backgroundColor: '#028af8',
+    backgroundColor: '#000000',
     scene: [
         Boot,
         Preloader,
@@ -19,6 +19,7 @@ const config: Phaser.Types.Core.GameConfig = {
     ],
     physics: {
         default: 'arcade',
+        //arcade: {debug: true}
     },
 };
 
