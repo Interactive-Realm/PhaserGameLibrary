@@ -47,15 +47,9 @@ export class Preloader extends Scene
         this.load.image('shield', 'bubble-field.png');
         this.load.image('weapon1', 'bullets.png');
         this.load.image('weapon2', 'sinusoidal-beam.png');
+        this.load.image('player', 'ArcadeFighter_PlayerSprite.png')
 
-        this.load.image('haybale', 'haybale.png');
-        this.load.image('tire', 'cartire.png');
-        this.load.image('roadline', 'roadline.png');
-        this.load.image('spawnline', 'spawnline.png');
-        this.load.image('instructions', 'instructions.png');
-        this.load.image('cone', 'trafficcone.png');
-        this.load.audio('music', 'night-ride-mountaineer.mp3');
-        this.load.audio('crash', 'crash.mp3');
+
     }
 
     create ()
