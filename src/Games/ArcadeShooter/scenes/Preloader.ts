@@ -38,9 +38,16 @@ export class Preloader extends Scene
         this.load.setPath(pathRef);
 
         this.load.image('player', 'spaceship.png');
+
         this.load.image('enemy1', 'scout-ship.png');
         this.load.image('enemy2', 'mars-pathfinder.png');
         this.load.image('enemy3', 'lunar-module.png');
+
+        this.load.image('rocket', 'rocket.png');
+        this.load.image('shield', 'bubble-field.png');
+        this.load.image('weapon1', 'bullets.png');
+        this.load.image('weapon2', 'sinusoidal-beam.png');
+
         this.load.image('haybale', 'haybale.png');
         this.load.image('tire', 'cartire.png');
         this.load.image('roadline', 'roadline.png');
