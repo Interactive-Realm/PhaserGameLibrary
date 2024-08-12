@@ -14,6 +14,37 @@ export class Game extends Scene
     private screenWidth: number;
     private screenHeight: number;
 
-   
+    constructor ()
+    {
+        super('Game');
+    }
+
+    preload() {
+        
+    }
+
+    create(){
+
+    }
+    
+    endGame = () => {
+        this.cameras.main.fadeOut(1500, 0, 0, 0);
+
+        //console.log("game ended! Your Score: " + this.score);
+        //EventBus.emit('score', this.score);
+
+        this.time.addEvent({
+            delay: 2000, 
+            callback: function() {
+                EventBus.emit('gameHasEnded', true);
+            },
+            callbackScope: this,
+            loop: false
+        });
+        
+    }
+
+
+        
 
 }
