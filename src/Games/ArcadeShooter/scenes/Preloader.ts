@@ -47,7 +47,9 @@ export class Preloader extends Scene
         this.load.image('shield', 'bubble-field.png');
         this.load.image('weapon1', 'bullets.png');
         this.load.image('weapon2', 'sinusoidal-beam.png');
-        this.load.image('player', 'ArcadeFighter_PlayerSprite.png')
+        this.load.image('player', 'ArcadeFighter_PlayerSprite.png');
+        this.load.spritesheet('player_spritesheet_flyleft', 'ArcadeFighter_PlayerSpriteSheet_FlyLeft.png');
+        this.load.spritesheet('player_spritesheet_flyright', 'ArcadeFighter_PlayerSpriteSheet_FlyRight.png');
 
 
     }
