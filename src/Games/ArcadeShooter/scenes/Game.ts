@@ -23,7 +23,8 @@ export class Game extends Scene
 
     target: any;
 
-    private enemy: Physics.Arcade.Sprite;
+    private enemy: PlayerPrefab;
+    enemyBody: Phaser.Physics.Arcade.Body;
     private enemyMoveSpeed: number;
 
     private direction: number;
@@ -55,7 +56,7 @@ export class Game extends Scene
         this.add.existing(this.player);
 
         this.physics.world.enable(this.player);
-        const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
+        this.playerBody = this.player.body as Phaser.Physics.Arcade.Body;
 
         const movementType = new PlayerMovement(this.player, this);
         movementType.MovePlayerXYDrag(this.playerSpeed, this.game);
@@ -75,11 +76,10 @@ export class Game extends Scene
         
         const enemy = new EnemyPrefab(this, this.screenWidth/2, 400, 'enemy1').setScale(0.5);
         this.physics.add.existing(enemy);
-
-         
-
+        this.add.existing(enemy);
         this.enemy = enemy;
-
+        this.enemyBody = this.enemy.body as Phaser.Physics.Arcade.Body;
+        
     }
 
     MoveEnemy() {
@@ -94,9 +94,8 @@ export class Game extends Scene
             this.direction = 1;
         }
 
-        this.enemy.setVelocityX(this.direction * this.enemyMoveSpeed);
+        this.enemyBody.setVelocityX(this.direction * this.enemyMoveSpeed);
     }
-
     
     update(time: number, delta: number): void {
 
@@ -115,6 +114,7 @@ export class Game extends Scene
                 }
             
 
+        this.MoveEnemy();
     }
 
     endGame = () => {
