@@ -29,6 +29,11 @@ export class Game extends Scene
 
     private direction: number;
 
+    private enemy: Physics.Arcade.Sprite;
+    private enemyMoveSpeed: number;
+
+    private direction: number;
+
     constructor ()
     {
         super('Game');
