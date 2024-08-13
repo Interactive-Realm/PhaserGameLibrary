@@ -20,7 +20,7 @@ export class Game extends Scene
     playerBody: Phaser.Physics.Arcade.Body;
     playerSpeed: number;
 
-    pointer: any;
+    target: any;
 
     constructor ()
     {
@@ -38,11 +38,12 @@ export class Game extends Scene
         this.screenHeight = this.sys.game.config.height as number;
 
         this.playerSpeed = 200;
+        this.target = null;
     }
 
     create(){
         console.log(this.screenWidth);
-        this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player');
+        this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player').setScale(0.25,0.25);
         this.add.existing(this.player);
         this.physics.world.enable(this.player);
         const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
@@ -50,9 +51,17 @@ export class Game extends Scene
         const movementType = new PlayerMovement(this.player, this);
         movementType.MovePlayerXYDrag(this.playerSpeed, this.game);
 
-        this.pointer = this.game.input.activePointer;
         
-
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) =>
+            {
+                this.target.x == pointer.x;
+                this.target.y == pointer.y;
+    
+                // Move at 200 px/s:
+                this.physics.moveToObject(this.player, this.target, 200);
+    
+                
+            });
         
         
     }
@@ -61,14 +70,14 @@ export class Game extends Scene
 
         const tolerance = 4;
 
-        const distance = Phaser.Math.Distance.Between(this.pointer.x,this.pointer.y,this.player.x,this.player.y)
+        const distance = Phaser.Math.Distance.Between(this.player.x,this.player.y,this.target.x,this.target.y)
 
         console.log(distance);
     
                 if (distance < tolerance)
                 {
                     
-                    this.playerBody.reset(this.pointer.x, this.pointer.y);
+                    this.playerBody.reset(this.target.x, this.target.y);
                 }
             
 
