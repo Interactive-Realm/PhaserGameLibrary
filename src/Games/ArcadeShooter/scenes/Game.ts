@@ -1,7 +1,8 @@
 import { EventBus } from '../../../EventBus';
-import { Scene, GameObjects, Sound } from 'phaser';
+import { Scene, GameObjects, Sound, Physics } from 'phaser';
 import PlayerPrefab from '../../../Components/Prefabs/AS_Player.ts'
 import PlayerMovement from '../../../Components/Functions/PlayerMovement.ts';
+import EnemyPrefab from '../../../Components/Prefabs/AS_Enemy.ts';
 
 export class Game extends Scene
 {
@@ -22,6 +23,11 @@ export class Game extends Scene
 
     target: any;
 
+    private enemy: Physics.Arcade.Sprite;
+    private enemyMoveSpeed: number;
+
+    private direction: number;
+
     constructor ()
     {
         super('Game');
@@ -39,6 +45,8 @@ export class Game extends Scene
 
         this.playerSpeed = 200;
         this.target = null;
+        this.enemyMoveSpeed = 200;
+        this.direction = 1;
     }
 
     create(){
@@ -64,6 +72,37 @@ export class Game extends Scene
             });
         
         
+        const enemy = new EnemyPrefab(this, this.screenWidth/2, 400, 'enemy1').setScale(0.5);
+        this.physics.add.existing(enemy);
+
+         
+
+        this.enemy = enemy;
+
+        
+        
+
+        const movementType = new PlayerMovement(player, this);
+        movementType.MovePlayerXY();
+    }
+
+    MoveEnemy() {
+
+
+        console.log(this.enemy.x);
+
+        if(this.enemy.x >= this.screenWidth) {
+            this.direction = -1;
+        }
+        else if(this.enemy.x <= 0) {
+            this.direction = 1;
+        }
+
+        this.enemy.setVelocityX(this.direction * this.enemyMoveSpeed);
+    }
+
+    update(time: number, delta: number) {
+        this.MoveEnemy();
     }
     
     update(time: number, delta: number): void {
