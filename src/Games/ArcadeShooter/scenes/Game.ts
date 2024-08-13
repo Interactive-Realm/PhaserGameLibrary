@@ -53,7 +53,7 @@ export class Game extends Scene
     }
 
     create(){
-        this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player').setScale(0.25,0.25);
+        this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'playerx3').setScale(1);
         this.add.existing(this.player);
 
         this.physics.world.enable(this.player);

@@ -11,7 +11,7 @@ const config: Phaser.Types.Core.GameConfig = {
     width: 1920,
     height: 1080,
     parent: 'game-container',
-    backgroundColor: '#000000',
+    backgroundColor: '#b3b1c5',
     scene: [
         Boot,
         Preloader,
@@ -27,7 +27,6 @@ const StartGame = (parent: string, customAssets: boolean) => {
 
     pathSelector(customAssets);
     return new Game({ ...config, parent });
-    
 }
 
 export {StartGame as StartGameArcadeShooter};
