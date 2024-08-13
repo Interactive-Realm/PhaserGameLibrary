@@ -53,6 +53,7 @@ export class Game extends Scene
         console.log(this.screenWidth);
         this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player').setScale(0.25,0.25);
         this.add.existing(this.player);
+
         this.physics.world.enable(this.player);
         const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
 
@@ -79,11 +80,6 @@ export class Game extends Scene
 
         this.enemy = enemy;
 
-        
-        
-
-        const movementType = new PlayerMovement(player, this);
-        movementType.MovePlayerXY();
     }
 
     MoveEnemy() {
@@ -101,11 +97,10 @@ export class Game extends Scene
         this.enemy.setVelocityX(this.direction * this.enemyMoveSpeed);
     }
 
-    update(time: number, delta: number) {
-        this.MoveEnemy();
-    }
     
     update(time: number, delta: number): void {
+
+        this.MoveEnemy();
 
         const tolerance = 4;
 
