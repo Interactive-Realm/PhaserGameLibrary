@@ -37,7 +37,6 @@ export class Preloader extends Scene
          //  Load the assets for the game - Replace with your own assets
         this.load.setPath(pathRef);
 
-        this.load.image('player', 'spaceship.png');
 
         this.load.image('enemy1', 'scout-ship.png');
         this.load.image('enemy2', 'mars-pathfinder.png');

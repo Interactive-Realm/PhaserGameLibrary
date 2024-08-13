@@ -76,6 +76,7 @@ export class Game extends Scene
             });
         
         
+        
         const enemy = new EnemyPrefab(this, this.screenWidth/2, 400, 'enemy1').setScale(0.5);
         this.physics.add.existing(enemy);
         this.add.existing(enemy);
