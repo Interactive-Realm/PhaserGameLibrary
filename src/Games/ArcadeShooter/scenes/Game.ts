@@ -48,24 +48,26 @@ export class Game extends Scene
         
         this.enemyMoveSpeed = 200;
         this.direction = 1;
+        this.target = Phaser.Math.Vector2;
+
     }
 
     create(){
-        console.log(this.screenWidth);
         this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player').setScale(0.25,0.25);
         this.add.existing(this.player);
 
         this.physics.world.enable(this.player);
         this.playerBody = this.player.body as Phaser.Physics.Arcade.Body;
 
-        const movementType = new PlayerMovement(this.player, this);
-        movementType.MovePlayerXYDrag(this.playerSpeed, this.game);
+        // const movementType = new PlayerMovement(this.player, this);
+        // movementType.MovePlayerXYDrag(this.playerSpeed, this.game);
 
         
-        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) =>
+        this.input.on('pointermove', (pointer: Phaser.Input.Pointer) =>
             {
-                this.target.x = pointer.x;
-                this.target.y = pointer.y;
+                console.log("test");
+                this.target.x = pointer.worldX;
+                this.target.y = pointer.worldY;
     
                 // Move at 200 px/s:
                 this.physics.moveToObject(this.player, this.target, 200);
@@ -85,7 +87,7 @@ export class Game extends Scene
     MoveEnemy() {
 
 
-        console.log(this.enemy.x);
+        //console.log(this.enemy.x);
 
         if(this.enemy.x >= this.screenWidth) {
             this.direction = -1;
@@ -104,8 +106,6 @@ export class Game extends Scene
         const tolerance = 4;
 
         const distance = Phaser.Math.Distance.Between(this.player.x,this.player.y,this.target.x,this.target.y)
-
-        console.log(distance);
     
                 if (distance < tolerance)
                 {
@@ -113,8 +113,6 @@ export class Game extends Scene
                     this.playerBody.reset(this.target.x, this.target.y);
                 }
             
-
-        this.MoveEnemy();
     }
 
     endGame = () => {
