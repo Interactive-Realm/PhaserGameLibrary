@@ -29,11 +29,6 @@ export class Game extends Scene
 
     private direction: number;
 
-    private enemy: Physics.Arcade.Sprite;
-    private enemyMoveSpeed: number;
-
-    private direction: number;
-
     constructor ()
     {
         super('Game');
@@ -50,7 +45,7 @@ export class Game extends Scene
         this.screenHeight = this.sys.game.config.height as number;
 
         this.playerSpeed = 200;
-        this.target = null;
+        
         this.enemyMoveSpeed = 200;
         this.direction = 1;
     }
@@ -69,8 +64,8 @@ export class Game extends Scene
         
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) =>
             {
-                this.target.x == pointer.x;
-                this.target.y == pointer.y;
+                this.target.x = pointer.x;
+                this.target.y = pointer.y;
     
                 // Move at 200 px/s:
                 this.physics.moveToObject(this.player, this.target, 200);
