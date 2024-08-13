@@ -9,7 +9,7 @@ export function pathSelector(custom: boolean) {
         pathRef = "src/Games/ArcadeShooter/assets";
         console.log("loading public/assets from preloader");
     }
-       
+    
     else if(custom === false) {
         pathRef = '/node_modules/@interactive-realm/phasergamelibrary/dist/assets'
         console.log("loading package assets from preloader");
