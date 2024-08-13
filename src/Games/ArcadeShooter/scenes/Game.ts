@@ -28,6 +28,7 @@ export class Game extends Scene
     private enemyMoveSpeed: number;
 
     private direction: number;
+    playerbullet: Physics.Arcade.Body;
 
     constructor ()
     {
@@ -53,16 +54,19 @@ export class Game extends Scene
     }
 
     create(){
-        this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player').setScale(0.25,0.25);
+        // Setup Player
+        this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player').setScale(0.20);
         this.add.existing(this.player);
 
         this.physics.world.enable(this.player);
         this.playerBody = this.player.body as Phaser.Physics.Arcade.Body;
 
+        this.playerBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+
         // const movementType = new PlayerMovement(this.player, this);
         // movementType.MovePlayerXYDrag(this.playerSpeed, this.game);
 
-        
+        // Setup Player Movement
         this.input.on('pointermove', (pointer: Phaser.Input.Pointer) =>
             {
                 console.log("test");
@@ -74,10 +78,25 @@ export class Game extends Scene
     
                 
             });
+
+        // Fires bullet from player on left click of mouse
+        this.input.on('pointerdown', (pointer, time, lastFired) =>
+            {
+                if (this.player.active === false) { return; }
+
+                // Get bullet from bullets group
+                const bullet = this.playerBullets.get().setActive(true).setVisible(true);
+
+                if (bullet)
+                {
+                    bullet.fire(this.player, this.reticle);
+                    this.physics.add.collider(this.enemy, bullet, (enemyHit, bulletHit) => this.enemyHitCallback(enemyHit, bulletHit));
+                }
+            });
         
         
         
-        const enemy = new EnemyPrefab(this, this.screenWidth/2, 400, 'enemy1').setScale(0.5);
+        const enemy = new EnemyPrefab(this, this.screenWidth/2, 400, 'enemy1').setScale(0.1);
         this.physics.add.existing(enemy);
         this.add.existing(enemy);
         this.enemy = enemy;
