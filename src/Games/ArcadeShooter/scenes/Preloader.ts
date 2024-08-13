@@ -52,6 +52,9 @@ export class Preloader extends Scene
 
 
         //this.load.image('player', 'ArcadeFighter_PlayerSprite.png');
+        this.load.image('player', 'ArcadeFighter_PlayerSprite.png');
+        this.load.image('playerx10', 'ArcadeFighter_PlayerSprite_x10size.png');
+        this.load.image('playerx3', 'ArcadeFighter_PlayerSprite_x3size.png');
         this.load.spritesheet('player_spritesheet_flyleft', 'ArcadeFighter_PlayerSpriteSheet_FlyLeft.png', { frameWidth: 124, frameHeight: 100});
         this.load.spritesheet('player_spritesheet_flyright', 'ArcadeFighter_PlayerSpriteSheet_FlyRight.png',{ frameWidth: 124, frameHeight: 100});
 
