@@ -3,6 +3,7 @@ import { Scene, GameObjects, Sound, Physics } from 'phaser';
 import PlayerPrefab from '../../../Components/Prefabs/AS_Player.ts'
 import PlayerMovement from '../../../Components/Functions/PlayerMovement.ts';
 import EnemyPrefab from '../../../Components/Prefabs/AS_Enemy.ts';
+import Bullet from '../../../Components/Prefabs/Bullet.ts'
 
 export class Game extends Scene
 {
@@ -28,7 +29,8 @@ export class Game extends Scene
     private enemyMoveSpeed: number;
 
     private direction: number;
-    playerbullet: Physics.Arcade.Body;
+    playerBullets: Physics.Arcade.Group;
+    enemyBullets: Physics.Arcade.Group;
 
     constructor ()
     {
@@ -55,32 +57,24 @@ export class Game extends Scene
 
     create(){
         // Setup Player
-        this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player').setScale(0.20);
-        this.add.existing(this.player);
+        this.SetupPlayer();
 
-        this.physics.world.enable(this.player);
-        this.playerBody = this.player.body as Phaser.Physics.Arcade.Body;
-
-        this.playerBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
-
-        // const movementType = new PlayerMovement(this.player, this);
-        // movementType.MovePlayerXYDrag(this.playerSpeed, this.game);
+        // Setup Enemy
+        this.SpawnEnemy();
 
         // Setup Player Movement
         this.input.on('pointermove', (pointer: Phaser.Input.Pointer) =>
             {
-                console.log("test");
                 this.target.x = pointer.worldX;
                 this.target.y = pointer.worldY;
     
                 // Move at 200 px/s:
                 this.physics.moveToObject(this.player, this.target, 200);
-    
                 
             });
 
         // Fires bullet from player on left click of mouse
-        this.input.on('pointerdown', (pointer, time, lastFired) =>
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer, time: number, lastFired: any) =>
             {
                 if (this.player.active === false) { return; }
 
@@ -89,19 +83,107 @@ export class Game extends Scene
 
                 if (bullet)
                 {
-                    bullet.fire(this.player, this.reticle);
+                    bullet.fire_straight(this.player, this.enemy);
                     this.physics.add.collider(this.enemy, bullet, (enemyHit, bulletHit) => this.enemyHitCallback(enemyHit, bulletHit));
                 }
             });
+            
+    }
+
+    SetupPlayer(){
+        // Create new player from PlayerPrefab class and add to scene
+        this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player').setScale(0.20);        
         
-        
-        
-        const enemy = new EnemyPrefab(this, this.screenWidth/2, 400, 'enemy1').setScale(0.1);
-        this.physics.add.existing(enemy);
-        this.add.existing(enemy);
-        this.enemy = enemy;
-        this.enemyBody = this.enemy.body as Phaser.Physics.Arcade.Body;
-        
+        // Set player HP to 3
+        this.player.health = 3;
+
+        // Create group for all player bullets (to ensure they only damage the enemies)
+        this.playerBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    }
+
+    SpawnEnemy(){
+        //Create new enemy from PlayerPefab class and add to scene
+        this.enemy = new PlayerPrefab(this, this.screenWidth/2, 400, 'enemy1').setScale(0.1);
+
+        // Set enemy HP
+        this.enemy.health = 3;
+
+        // Create group for all enemy bullets (to ensure they only damage the player)
+        this.enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    }
+
+    playerHitCallback (playerHit: any, bulletHit: any)
+    {
+        // Reduce health of player
+        if (bulletHit.active === true && playerHit.active === true)
+        {
+            
+            playerHit.health = playerHit.health - 1;
+            if(playerHit.health == 0) playerHit.destroy();
+            console.log('Player hp: ', playerHit.health);
+
+            // // Kill hp sprites and kill player if health <= 0
+            // if (playerHit.health === 2)
+            // {
+            //     this.hp3.destroy();
+            // }
+            // else if (playerHit.health === 1)
+            // {
+            //     this.hp2.destroy();
+            // }
+            // else
+            // {
+            //     this.hp1.destroy();
+
+            //     // Game over state should execute here
+            // }
+
+            // Destroy bullet
+            bulletHit.setActive(false).setVisible(false);
+        }
+    }
+
+    enemyFire (time: number)
+    {
+        if (this.enemy.active === false)
+        {
+            return;
+        }
+
+        if ((time - this.enemy.lastFired) > 1000)
+        {
+            this.enemy.lastFired = time;
+
+            // Get bullet from bullets group
+            const bullet = this.enemyBullets.get().setActive(true).setVisible(true);
+
+            if (bullet)
+            {
+                bullet.fire_homing(this.enemy, this.player);
+
+                // Add collider between bullet and player
+                this.physics.add.collider(this.player, bullet, (playerHit, bulletHit) => this.playerHitCallback(playerHit, bulletHit));
+            }
+        }
+    }
+
+    enemyHitCallback (enemyHit: any, bulletHit: any)
+    {
+        // Reduce health of enemy
+        if (bulletHit.active === true && enemyHit.active === true)
+        {
+            enemyHit.health = enemyHit.health - 1;
+            console.log('Enemy hp: ', enemyHit.health);
+
+            // Kill enemy if health <= 0
+            if (enemyHit.health <= 0)
+            {
+                enemyHit.setActive(false).setVisible(false);
+            }
+
+            // Destroy bullet
+            bulletHit.setActive(false).setVisible(false);
+        }
     }
 
     MoveEnemy() {
@@ -116,12 +198,15 @@ export class Game extends Scene
             this.direction = 1;
         }
 
-        this.enemyBody.setVelocityX(this.direction * this.enemyMoveSpeed);
+        this.enemy.prefabBody.setVelocityX(this.direction * this.enemyMoveSpeed);
     }
     
-    update(time: number, delta: number): void {
+    update(time: number, delta: number){
 
         this.MoveEnemy();
+
+        // Make enemy fire
+        this.enemyFire(time);
 
         const tolerance = 4;
 
@@ -130,8 +215,11 @@ export class Game extends Scene
                 if (distance < tolerance)
                 {
                     
-                    this.playerBody.reset(this.target.x, this.target.y);
+                    this.player.prefabBody.reset(this.target.x, this.target.y);
                 }
+
+        
+
             
     }
 
