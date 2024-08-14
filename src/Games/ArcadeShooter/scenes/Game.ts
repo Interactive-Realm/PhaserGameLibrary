@@ -69,7 +69,7 @@ export class Game extends Scene
                 this.target.y = pointer.worldY;
     
                 // Move at 200 px/s:
-                this.physics.moveToObject(this.player, this.target, 200);
+                this.physics.moveToObject(this.player, this.target, 200, 300);
                 
             });
 
