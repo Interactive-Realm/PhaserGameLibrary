@@ -22,7 +22,7 @@ export default class PlayerMovement {
         console.log(this.cursorHeld);
     }
 
-    MovePlayerXY() {
+    MovementMouseXY(inputtype: string) {
         this.scene.input.on('pointerdown', this.SetCursorHoldTrue);
         this.scene.input.on('pointerup', this.SetCursorHoldFalse);
         //this.scene.input.on('pointerdown', this.StartGame);
@@ -41,14 +41,14 @@ export default class PlayerMovement {
             }
         }
         // Add pointer down event to keep moving the player towards the pointer even when the pointer is still
-        this.scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+        this.scene.input.on(inputtype, (pointer: Phaser.Input.Pointer) => {
             // Call the update function to start moving the player towards the pointer
             this.updatePlayerPosition(pointer);
         }, this);
 
     }
 
-    MovePlayerX() {
+    MovementMouseX() {
         this.scene.input.on('pointerdown', this.SetCursorHoldTrue);
         this.scene.input.on('pointerup', this.SetCursorHoldFalse);
         //this.scene.input.on('pointerdown', this.StartGame);
@@ -70,7 +70,7 @@ export default class PlayerMovement {
 
     }
 
-    MovePlayerXYDrag(playerSpeed: number, game: Phaser.Game){        
+    MovementMouseXYDrag(playerSpeed: number, game: Phaser.Game){        
         this.scene.input.on('pointerdown', this.SetCursorHoldTrue);
         this.scene.input.on('pointerup', this.SetCursorHoldFalse);
 
@@ -112,4 +112,20 @@ export default class PlayerMovement {
         
 
     }
+
+    // update(time: number, delta: number){
+
+    //     const tolerance = 4;
+
+    //     const distance = Phaser.Math.Distance.Between(this.playerObject.x,this.playerObject.y,this.target.x,this.target.y)
+    
+    //             if (distance < tolerance)
+    //             {
+                    
+    //                 this.playerBody.reset(this.target.x, this.target.y);
+    //             }
+
+        
+            
+    // }
 }
