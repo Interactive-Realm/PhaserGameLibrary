@@ -32,6 +32,12 @@ export default class PlayerPrefab extends Phaser.Physics.Arcade.Sprite
 	// Called from game when player has been hit, deducted one HP and sets a post damage invincibility state for 3 seconds
 	PlayerHit(){
 		this.health -= 1
+		if(this.health == 0) {
+			
+			//this.setVisible(false)
+			this.destroy();
+			return;
+		};
 		this.PlayerInvincibility();
 	}
 
