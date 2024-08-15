@@ -14,14 +14,14 @@ export default class Bullet extends Phaser.GameObjects.Image
         this.direction = 0;
         this.xSpeed = 0;
         this.ySpeed = 0;
-        this.setSize(12, 12);
+        //this.setSize(100, 100);
     }
 
-    fire_straight (shooter: any )
+    fire_straight (shooter: any, direction:number )
     {
         this.setPosition(shooter.x, shooter.y); // Initial position
-        this.direction = 500;
-        this.ySpeed = this.speed * Math.cos(this.direction);
+        this.direction = direction;
+        this.ySpeed = this.speed * this.direction;
         //this.rotation = shooter.rotation; // angle bullet with shooters rotation
         this.born = 0; // Time since new bullet spawned
     }
