@@ -66,15 +66,16 @@ export class Game extends Scene
         this.SpawnEnemy("2");
 
         this.SetupUI();
+
         // Setup Player Movement
-        this.input.on('pointermove', (pointer: Phaser.Input.Pointer) =>
-            {
-                this.target.x = pointer.worldX;
-                this.target.y = pointer.worldY;
+        // this.input.on('pointermove', (pointer: Phaser.Input.Pointer) =>
+        //     {
+        //         this.target.x = pointer.worldX;
+        //         this.target.y = pointer.worldY;
     
-                // Move at 200 px/s:
-                this.physics.moveToObject(this.player, this.target, 200, 300);
-            });
+        //         // Move at 200 px/s:
+        //         this.physics.moveToObject(this.player, this.target, 200, 300);
+        //     });
 
         // Fires bullet from player on left click of mouse
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer, time: number, lastFired: any) =>
@@ -92,14 +93,15 @@ export class Game extends Scene
             });
 
         //this.time.addEvent({delay: Phaser.Math.Between(100,5000), callback: this.SpawnEnemy,callbackScope:"1",repeat:10})
-        this.hp1 = this.add.image(50, 100, 'hp').setScale(0.1);
-        this.hp2 = this.add.image(100, 100, 'hp').setScale(0.1);
-        this.hp3 = this.add.image(150, 100, 'hp').setScale(0.1);
+
         
     }
 
     SetupUI(){
-
+        // Setup Player HP
+        this.hp1 = this.add.image(50, 100, 'hp').setScale(0.1);
+        this.hp2 = this.add.image(100, 100, 'hp').setScale(0.1);
+        this.hp3 = this.add.image(150, 100, 'hp').setScale(0.1);
     }
 
     SpawnPlayer(){
@@ -108,6 +110,10 @@ export class Game extends Scene
         
         // Set player HP to 3
         this.player.health = 3;
+
+        // Setup Player Movement
+        const movementType = new PlayerMovement(this.player, this);
+        movementType.MovementMouseXYDrag();
 
         // Create group for all player bullets (to ensure they only damage the enemies)
         this.playerBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
@@ -153,11 +159,9 @@ export class Game extends Scene
         // Reduce health of player
         if (bulletHit.active === true && playerHit.active === true && this.player.invincible == false)
         {
-            
-            playerHit.health = playerHit.health - 1;
-            this.PlayerInvincibility();
+            playerHit.health = playerHit.health - 1; //
+            this.player.PlayerInvincibility();
             if(playerHit.health == 0) playerHit.destroy();
-            console.log('Player hp: ', playerHit.health);
 
             // Kill hp sprites and kill player if health <= 0
             if (playerHit.health === 2)
@@ -171,27 +175,15 @@ export class Game extends Scene
             else
             {
                 this.hp1.destroy();
-                this.endGame();
-
-                // Game over state should execute here
+                this.endGame(); // Game over state should execute here
             }
 
             // Destroy bullet
-            bulletHit.setActive(false).setVisible(false);
+            bulletHit.destroy();
         }
     }
 
-    PlayerInvincibility(){
-        this.player.SetInvicible();
-        this.player.setVisible(false);
-        this.time.addEvent({delay: 500, callback: this.PlayerBlink, repeat: 6})
-        this.time.addEvent({delay: 3000, callback: this.player.SetInvicible.bind(this)})
 
-    }
-
-    PlayerBlink = () => {
-        this.player.setVisible(!this.player.visible);
-    }
 
     enemyFire (time: number)
     {
@@ -257,15 +249,15 @@ export class Game extends Scene
         // Make enemy fire
         this.enemyFire(time);
 
-        const tolerance = 4;
+        // const tolerance = 4;
 
-        const distance = Phaser.Math.Distance.Between(this.player.x,this.player.y,this.target.x,this.target.y)
+        // const distance = Phaser.Math.Distance.Between(this.player.x,this.player.y,this.target.x,this.target.y)
     
-                if (distance < tolerance)
-                {
+        //         if (distance < tolerance)
+        //         {
                     
-                    this.player.prefabBody.reset(this.target.x, this.target.y);
-                }
+        //             this.player.prefabBody.reset(this.target.x, this.target.y);
+        //         }
 
         
 

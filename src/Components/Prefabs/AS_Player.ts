@@ -5,21 +5,44 @@ export default class PlayerPrefab extends Phaser.Physics.Arcade.Sprite
 	public health: number;
 	public lastFired: number;
 	public prefabBody: Physics.Arcade.Body;
-	public invincible: boolean;
+
+	invincible: boolean;
+	missiles: number;
+
 	constructor(scene: Phaser.Scene, x: number, y: number, image: string)
 	{
 		super(scene, x, y, image)
+		this.SetupPlayer();
+	}
+
+	SetupPlayer(){
+
+		this.missiles = 0;
 		this.lastFired = 0;
+
 		this.scene.add.existing(this);
+
 		this.scene.physics.world.enable(this);
 		this.prefabBody = this.body as Physics.Arcade.Body;
+
 		this.invincible = false;
 	}
 
 	public SetInvicible = () => {
 		this.invincible = !this.invincible;
-		console.log(this.invincible);
 	}
+
+	PlayerInvincibility(){
+        this.SetInvicible();
+        this.setVisible(false);
+        this.scene.time.addEvent({delay: 500, callback: this.PlayerBlink, repeat: 6})
+        this.scene.time.addEvent({delay: 3000, callback: this.SetInvicible.bind(this)})
+
+    }
+
+    PlayerBlink = () => {
+        this.setVisible(!this.visible);
+    }
 
 	// SetupPlayer() {
     // this.player = this.add.tileSprite(this.screenCenterX, this.playerPositionY, 128, 128, 'player').setDepth(4);
