@@ -4,6 +4,7 @@ import PlayerPrefab from '../../../Components/Prefabs/AS_Player.ts'
 import PlayerMovement from '../../../Components/Functions/PlayerMovement.ts';
 import EnemyPrefab from '../../../Components/Prefabs/AS_Enemy.ts';
 import Bullet from '../../../Components/Prefabs/Bullet.ts'
+import PowerUp from '../../../Components/Prefabs/PowerUp.ts';
 
 export class Game extends Scene
 {
@@ -18,24 +19,26 @@ export class Game extends Scene
     private screenWidth: number;
     private screenHeight: number;
 
+    // Player Variables
     player: PlayerPrefab;
     playerBody: Phaser.Physics.Arcade.Body;
-    playerSpeed: number;
-
-    target: any;
-
-    private enemy: PlayerPrefab;
-    enemyBody: Phaser.Physics.Arcade.Body;
-    private enemyMoveSpeed: number;
-
-
+    playerMoveSpeed: number;
     playerBullets: Physics.Arcade.Group;
+
+    // Enemy Variables
+    enemy: PlayerPrefab;
+    enemyBody: Phaser.Physics.Arcade.Body;
+    enemyMoveSpeed: number;
     enemyBullets: Physics.Arcade.Group;
     enemies: Physics.Arcade.Group;
 
-    hp1: any;
-    hp2: any;
-    hp3: any;
+    // PowerUps Variables
+    powerups: Physics.Arcade.Group; // All current active power ups
+
+    // UI References
+    hp1: any; // Left most HP Icon
+    hp2: any; // Middle HP Icon
+    hp3: any; // Right most HP Icon
 
     constructor ()
     {
@@ -52,31 +55,59 @@ export class Game extends Scene
         this.screenWidth = this.sys.game.config.width as number;
         this.screenHeight = this.sys.game.config.height as number;
 
-        this.playerSpeed = 200;
+        this.playerMoveSpeed = 200;
         
         this.enemyMoveSpeed = 200;
-        this.target = Phaser.Math.Vector2;
 
     }
 
     create(){
+
         // Setup Player
         this.SpawnPlayer();
 
+        // Spawn test enemy
         this.SpawnEnemy("2");
 
+        // Setup UI
         this.SetupUI();
-        // Setup Player Movement
-        this.input.on('pointermove', (pointer: Phaser.Input.Pointer) =>
-            {
-                this.target.x = pointer.worldX;
-                this.target.y = pointer.worldY;
-    
-                // Move at 200 px/s:
-                this.physics.moveToObject(this.player, this.target, 200, 300);
-            });
+        
+        this.SpawnPowerUp();
+    }
 
-        // Fires bullet from player on left click of mouse
+    SetupUI(){
+
+        // Setup Player HP UI
+        this.hp1 = this.add.image(50, 100, 'hp').setScale(0.1);
+        this.hp2 = this.add.image(100, 100, 'hp').setScale(0.1);
+        this.hp3 = this.add.image(150, 100, 'hp').setScale(0.1);
+
+        // Setup Scoreboard UI
+
+        // Setup Missile Count UI
+    }
+
+    SpawnPlayer(){
+        // Create new player from PlayerPrefab class and add to scene
+        this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player').setScale(0.20);        
+        
+        // Set player HP to 3
+        this.player.health = 3;
+
+        // Setup Player Controls
+        this.SetupPlayerControls();
+
+        // Create group for all player bullets (to ensure they only damage the enemies)
+        this.playerBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    }
+
+    SetupPlayerControls(){
+
+        // Setup Player Movement
+        const movementType = new PlayerMovement(this.player, this);
+        movementType.MovementMouseXYDrag();
+
+        // Setup Shoot Button
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer, time: number, lastFired: any) =>
             {
                 if (this.player.active === false) { return; }
@@ -91,26 +122,7 @@ export class Game extends Scene
                 }
             });
 
-        //this.time.addEvent({delay: Phaser.Math.Between(100,5000), callback: this.SpawnEnemy,callbackScope:"1",repeat:10})
-        this.hp1 = this.add.image(50, 100, 'hp').setScale(0.1);
-        this.hp2 = this.add.image(100, 100, 'hp').setScale(0.1);
-        this.hp3 = this.add.image(150, 100, 'hp').setScale(0.1);
-        
-    }
-
-    SetupUI(){
-
-    }
-
-    SpawnPlayer(){
-        // Create new player from PlayerPrefab class and add to scene
-        this.player = new PlayerPrefab(this, this.screenWidth/2, this.screenHeight/1.2, 'player').setScale(0.20);        
-        
-        // Set player HP to 3
-        this.player.health = 3;
-
-        // Create group for all player bullets (to ensure they only damage the enemies)
-        this.playerBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+        // Setup Missile Button
     }
 
     SpawnEnemy(enemyType: string){
@@ -137,10 +149,14 @@ export class Game extends Scene
             
         //Create new enemy from PlayerPefab class and add to scene
         this.enemy = new PlayerPrefab(this, this.screenWidth/2, 400, img as string).setScale(0.1);
+
+        // Add physics and collision
         this.enemies = this.physics.add.group(this.enemy);
+        this.physics.add.collider(this.player, this.enemy, (playerHit) => this.enemy.kill);
 
         // Set enemy HP
         this.enemy.health = enemyHP as number;
+        
 
         // Create group for all enemy bullets (to ensure they only damage the player)
         this.enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
@@ -148,14 +164,20 @@ export class Game extends Scene
         return this.enemy;
     }
 
+    SpawnPowerUp(){
+
+        const powerUp = new PowerUp(this,  this.screenCenterX, this.screenCenterY, "shield").setScale(0.25);
+        this.physics.add.collider(this.player, powerUp, (playerHit) => powerUp.ActivatePowerUp("missle", playerHit as PlayerPrefab));
+    }
+
+    // Callback function for when player has been hit
     playerHitCallback (playerHit: any, bulletHit: any)
     {
         // Reduce health of player
         if (bulletHit.active === true && playerHit.active === true && this.player.invincible == false)
         {
-            
-            playerHit.health = playerHit.health - 1;
-            this.PlayerInvincibility();
+            this.player.PlayerHit(); // Removed HP and puts player in invicible state for 3 seconds
+
             if(playerHit.health == 0) playerHit.destroy();
             console.log('Player hp: ', playerHit.health);
 
@@ -181,24 +203,30 @@ export class Game extends Scene
         }
     }
 
-    PlayerInvincibility(){
-        this.player.SetInvicible();
-        this.player.setVisible(false);
-        this.time.addEvent({delay: 500, callback: this.PlayerBlink, repeat: 6})
-        this.time.addEvent({delay: 3000, callback: this.player.SetInvicible.bind(this)})
+    // Callback function for when enemy has been hit
+    enemyHitCallback (enemyHit: any, bulletHit: any)
+    {
+        // Reduce health of enemy
+        if (bulletHit.active === true && enemyHit.active === true)
+        {
+            enemyHit.health -= 1;
 
+            // Kill enemy if health <= 0
+            if (enemyHit.health <= 0)
+            {
+                enemyHit.destroy();
+            }
+
+            // Destroy bullet
+            bulletHit.setActive(false).setVisible(false);
+        }
     }
 
-    PlayerBlink = () => {
-        this.player.setVisible(!this.player.visible);
-    }
+
 
     enemyFire (time: number)
     {
-        if (this.enemy == null)
-        {
-            return;
-        }
+        if (this.enemy == null) return;
 
         if ((time - this.enemy.lastFired) > 1000)
         {
@@ -212,29 +240,12 @@ export class Game extends Scene
                 bullet.fire_homing(this.enemy, this.player);
 
                 // Add collider between bullet and player
-                this.physics.add.collider(this.player, bullet, (playerHit, bulletHit) => this.playerHitCallback(playerHit, bulletHit));
+                this.physics.add.overlap(this.player, bullet, (playerHit, bulletHit) => this.playerHitCallback(playerHit, bulletHit));
             }
         }
     }
 
-    enemyHitCallback (enemyHit: any, bulletHit: any)
-    {
-        // Reduce health of enemy
-        if (bulletHit.active === true && enemyHit.active === true)
-        {
-            enemyHit.health = enemyHit.health - 1;
-            console.log('Enemy hp: ', enemyHit.health);
-
-            // Kill enemy if health <= 0
-            if (enemyHit.health <= 0)
-            {
-                enemyHit.setActive(false).setVisible(false);
-            }
-
-            // Destroy bullet
-            bulletHit.setActive(false).setVisible(false);
-        }
-    }
+    
 
     MoveEnemy(enemy: PlayerPrefab, direction: number) {
 
@@ -255,21 +266,7 @@ export class Game extends Scene
         this.MoveEnemy(this.enemy, -1);
 
         // Make enemy fire
-        this.enemyFire(time);
-
-        const tolerance = 4;
-
-        const distance = Phaser.Math.Distance.Between(this.player.x,this.player.y,this.target.x,this.target.y)
-    
-                if (distance < tolerance)
-                {
-                    
-                    this.player.prefabBody.reset(this.target.x, this.target.y);
-                }
-
-        
-
-            
+        this.enemyFire(time);            
     }
 
     endGame = () => {
