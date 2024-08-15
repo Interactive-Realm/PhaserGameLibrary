@@ -182,8 +182,6 @@ export class Game extends Scene
 
         // Add physics and collision
         this.enemies = this.physics.add.group(this.enemy);
-        this.physics.add.collider(this.player, this.enemy, (playerHit) => this.enemy.kill);
-
         // Add function to kill enemy on player collision
         this.physics.add.collider(this.player, this.enemy, (playerHit, enemyHit) => this.playerCollisionCallback(this.enemy));       
 
