@@ -52,7 +52,7 @@ export default class Bullet extends Phaser.GameObjects.Image
         this.x += this.xSpeed * delta;
         this.y += this.ySpeed * delta;
         this.born += delta;
-        if (this.born > 1800)
+        if (this.born > 4000)
         {
             this.setActive(false);
             this.setVisible(false);
