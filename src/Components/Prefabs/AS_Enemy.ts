@@ -6,6 +6,10 @@ export default class EnemyPrefab extends Phaser.GameObjects.Sprite
 	{
 		super(scene, x, y, image)
 	}
+
+	KillEnemy(){
+		this.destroy();
+	}
 }
 
 Phaser.GameObjects.GameObjectFactory.register(

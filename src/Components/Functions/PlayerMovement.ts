@@ -1,15 +1,17 @@
-import Phaser, { GameObjects } from "phaser";
+import Phaser, { Game, GameObjects, Physics } from "phaser";
 
 export default class PlayerMovement {
 
-    private playerObject: GameObjects.Sprite;
+    private playerObject: Physics.Arcade.Sprite;
     private scene: Phaser.Scene;
     private cursorHeld: boolean;
     updatePlayerPosition: Function;
+    private pointerRef: any;
     
-    constructor(gameObject: GameObjects.Sprite, scene: Phaser.Scene) {
+    constructor(gameObject: Physics.Arcade.Sprite, scene: Phaser.Scene) {
         this.playerObject = gameObject;
         this.scene = scene;
+        this.pointerRef = Phaser.Math.Vector2;
     }
 
     SetCursorHoldTrue = () => {
@@ -75,28 +77,29 @@ export default class PlayerMovement {
         
         // Add pointer down event to keep moving the player towards the pointer even when the pointer is still
         this.scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+
+            this.pointerRef.x = pointer.worldX;
+            this.pointerRef.y = pointer.worldY;
             
             // Call the update function to start moving the player towards the pointer
-            this.scene.physics.moveToObject(this.playerObject,pointer,240);
+            this.scene.physics.moveToObject(this.playerObject, this.pointerRef, 200, 300);
             
-        }, this);
-        
-
+        }, this);        
+ 
     }
 
-    // update(time: number, delta: number){
+    update(time: number, delta: number){
 
-    //     const tolerance = 4;
+        const tolerance = 4;
 
-    //     const distance = Phaser.Math.Distance.Between(this.playerObject.x,this.playerObject.y,this.target.x,this.target.y)
+        const distance = Phaser.Math.Distance.Between(this.playerObject.x,this.playerObject.y,this.pointerRef.x,this.pointerRef.y)
     
-    //             if (distance < tolerance)
-    //             {
-                    
-    //                 this.playerBody.reset(this.target.x, this.target.y);
-    //             }
+                if (distance < tolerance)
+                {
+                    this.playerObject.body?.reset(this.pointerRef.x, this.pointerRef.y);
+                }
 
         
             
-    // }
+    }
 }

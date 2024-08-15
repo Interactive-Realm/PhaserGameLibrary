@@ -179,7 +179,6 @@ export class Game extends Scene
             this.player.PlayerHit(); // Removed HP and puts player in invicible state for 3 seconds
 
             if(playerHit.health == 0) playerHit.destroy();
-            console.log('Player hp: ', playerHit.health);
 
             // Kill hp sprites and kill player if health <= 0
             if (playerHit.health === 2)
@@ -193,13 +192,11 @@ export class Game extends Scene
             else
             {
                 this.hp1.destroy();
-                this.endGame();
-
-                // Game over state should execute here
+                this.endGame(); // Game over state should execute here
             }
 
             // Destroy bullet
-            bulletHit.setActive(false).setVisible(false);
+            bulletHit.destroy();
         }
     }
 
