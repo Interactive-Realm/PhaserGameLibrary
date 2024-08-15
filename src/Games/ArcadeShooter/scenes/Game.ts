@@ -21,13 +21,11 @@ export class Game extends Scene
 
     // Player Variables
     player: PlayerPrefab;
-    playerBody: Phaser.Physics.Arcade.Body;
     playerMoveSpeed: number;
     playerBullets: Physics.Arcade.Group;
 
     // Enemy Variables
-    enemy: PlayerPrefab;
-    enemyBody: Phaser.Physics.Arcade.Body;
+    enemy: EnemyPrefab;
     enemyMoveSpeed: number;
     enemyBullets: Physics.Arcade.Group;
     enemies: Physics.Arcade.Group;
@@ -36,9 +34,9 @@ export class Game extends Scene
     powerups: Physics.Arcade.Group; // All current active power ups
 
     // UI References
-    hp1: any; // Left most HP Icon
-    hp2: any; // Middle HP Icon
-    hp3: any; // Right most HP Icon
+    hp1: Phaser.GameObjects.Image; // Left most HP Icon
+    hp2: Phaser.GameObjects.Image; // Middle HP Icon
+    hp3: Phaser.GameObjects.Image; // Right most HP Icon
 
     constructor ()
     {
@@ -55,8 +53,10 @@ export class Game extends Scene
         this.screenWidth = this.sys.game.config.width as number;
         this.screenHeight = this.sys.game.config.height as number;
 
+        // Set Player Speed
         this.playerMoveSpeed = 200;
         
+        // Set Enemy Speed
         this.enemyMoveSpeed = 200;
 
     }
@@ -67,11 +67,12 @@ export class Game extends Scene
         this.SpawnPlayer();
 
         // Spawn test enemy
-        this.SpawnEnemy("2");
+        this.SpawnEnemy(2);
 
         // Setup UI
         this.SetupUI();
         
+        // Spawn Test Power Up
         this.SpawnPowerUp();
     }
 
@@ -85,6 +86,33 @@ export class Game extends Scene
         // Setup Scoreboard UI
 
         // Setup Missile Count UI
+    }
+
+    UpdateUI(playerHit:PlayerPrefab){
+
+        // Kill hp sprites and kill player if health <= 0
+        if (playerHit.health === 3)
+        {
+            this.hp3.setVisible(true);
+        }
+        else if (playerHit.health === 2)
+        {
+            this.hp3.setVisible(false);
+        }
+        else if (playerHit.health === 1)
+        {
+            this.hp2.setVisible(false);
+        }
+        else
+        {
+            this.hp1.setVisible(false);
+
+             // Game over state should NOT execute here
+             
+        }  
+        if(playerHit.health == 0) this.endGame();             
+            
+
     }
 
     SpawnPlayer(){
@@ -101,6 +129,7 @@ export class Game extends Scene
         this.playerBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     }
 
+    // Setup Player Controls
     SetupPlayerControls(){
 
         // Setup Player Movement
@@ -113,11 +142,13 @@ export class Game extends Scene
                 if (this.player.active === false) { return; }
 
                 // Get bullet from bullets group
-                const bullet = this.playerBullets.get().setActive(true).setVisible(true);
+                const bullet = this.playerBullets.get(0,0,'bullet').setActive(true).setVisible(true);
+                const bulletImg = bullet as GameObjects.Image
+                bulletImg.setTexture('bullet').setScale(3);
 
                 if (bullet)
                 {
-                    bullet.fire_straight(this.player);
+                    bullet.fire_straight(this.player,-1);
                     this.physics.add.collider(this.enemies, bullet, (enemyHit, bulletHit) => this.enemyHitCallback(enemyHit, bulletHit));
                 }
             });
@@ -125,52 +156,52 @@ export class Game extends Scene
         // Setup Missile Button
     }
 
-    SpawnEnemy(enemyType: string){
+    // Spawns enemy
+    SpawnEnemy(enemyType: number){
         
-        let img;
-        let enemyHP;
+        let img;       
         switch (enemyType) {
 
-            case "1":
-                enemyHP = 1
+            case 1: 
                 img='enemy1'
                 break;
     
-            case "2":
-                enemyHP = 2
+            case 2:
                 img='enemy2'
                 break;
 
-            case "3":
-                enemyHP = 3
+            case 3:
                 img='enemy3'
                 break;
         }
             
         //Create new enemy from PlayerPefab class and add to scene
-        this.enemy = new PlayerPrefab(this, this.screenWidth/2, 400, img as string).setScale(0.1);
+        this.enemy = new EnemyPrefab(this, this.screenWidth/2, 400, img as string).setScale(0.1);
+
+        this.enemy.enemyType = enemyType;
 
         // Add physics and collision
         this.enemies = this.physics.add.group(this.enemy);
         this.physics.add.collider(this.player, this.enemy, (playerHit) => this.enemy.kill);
 
-        // Set enemy HP
-        this.enemy.health = enemyHP as number;
-        
+        // Add function to kill enemy on player collision
+        this.physics.add.collider(this.player, this.enemy, (playerHit, enemyHit) => this.playerCollisionCallback(this.enemy));       
 
         // Create group for all enemy bullets (to ensure they only damage the player)
-        this.enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+        this.enemyBullets = this.physics.add.group({ key: 'bullet', classType: Bullet, runChildUpdate: true });
 
         return this.enemy;
     }
 
+    // Spawns a power up 
+    // Still needs power up type scope in function call
     SpawnPowerUp(){
 
         const powerUp = new PowerUp(this,  this.screenCenterX, this.screenCenterY, "shield").setScale(0.25);
         this.physics.add.collider(this.player, powerUp, (playerHit) => powerUp.ActivatePowerUp("missle", playerHit as PlayerPrefab));
     }
 
-    // Callback function for when player has been hit
+    // Callback function for when player has been hit by bullet
     playerHitCallback (playerHit: any, bulletHit: any)
     {
         // Reduce health of player
@@ -178,63 +209,57 @@ export class Game extends Scene
         {
             this.player.PlayerHit(); // Removed HP and puts player in invicible state for 3 seconds
 
-            if(playerHit.health == 0) playerHit.destroy();
-
-            // Kill hp sprites and kill player if health <= 0
-            if (playerHit.health === 2)
-            {
-                this.hp3.destroy();
-            }
-            else if (playerHit.health === 1)
-            {
-                this.hp2.destroy();
-            }
-            else
-            {
-                this.hp1.destroy();
-                this.endGame(); // Game over state should execute here
-            }
+            this.UpdateUI(playerHit);           
 
             // Destroy bullet
             bulletHit.destroy();
         }
     }
 
-    // Callback function for when enemy has been hit
+    // Callback function for when enemy has been hit by bullet
     enemyHitCallback (enemyHit: any, bulletHit: any)
     {
         // Reduce health of enemy
         if (bulletHit.active === true && enemyHit.active === true)
         {
-            enemyHit.health -= 1;
-
-            // Kill enemy if health <= 0
-            if (enemyHit.health <= 0)
-            {
-                enemyHit.destroy();
-            }
+            // Call enemy hit function on enemyPrefab
+            const enemyPrefab = enemyHit as EnemyPrefab;            
+            enemyPrefab.EnemyHit();
 
             // Destroy bullet
-            bulletHit.setActive(false).setVisible(false);
+            bulletHit.destroy();
         }
     }
 
+    // Callback function for when player collide with enemy
+    playerCollisionCallback(collisionObject: EnemyPrefab){
+        this.player.PlayerHit();
+        this.UpdateUI(this.player);
 
+        collisionObject.KillEnemy();
+    }
 
-    enemyFire (time: number)
+    // Enemy Attack function, checks enemy type to determine attack type
+    enemyFire (enemy: EnemyPrefab, time: number)
     {
-        if (this.enemy == null) return;
 
-        if ((time - this.enemy.lastFired) > 1000)
+        // Ensure it doesn't call error in update if enemy is gone        
+        if (!enemy.active) return; 
+        
+        // Checks if 1 second has passed
+        if ((time - enemy.lastFired) > 1000) 
         {
-            this.enemy.lastFired = time;
+            enemy.lastFired = time;
 
             // Get bullet from bullets group
-            const bullet = this.enemyBullets.get().setActive(true).setVisible(true);
+            const bullet = this.enemyBullets.get(0,0, 'bullet').setActive(true).setVisible(true);
 
             if (bullet)
             {
-                bullet.fire_homing(this.enemy, this.player);
+                
+                if(enemy.enemyType === 3) bullet.fire_homing(enemy, this.player);
+                else if (enemy.enemyType === 2) bullet.fire_straight(enemy, 1);
+                else this.physics.moveToObject(this.enemy, this.player, 400, 2000);
 
                 // Add collider between bullet and player
                 this.physics.add.overlap(this.player, bullet, (playerHit, bulletHit) => this.playerHitCallback(playerHit, bulletHit));
@@ -243,9 +268,11 @@ export class Game extends Scene
     }
 
     
+    // THIS IS ONLY TEMPORARY 
+    // REMOVE THIS
+    MoveEnemy(enemy: EnemyPrefab, direction: number) {
 
-    MoveEnemy(enemy: PlayerPrefab, direction: number) {
-
+        if(enemy.enemyType === 1) return;
         //console.log(this.enemy.x);
         if(enemy == null) return;
         if(enemy.x >= this.screenWidth) {
@@ -263,9 +290,10 @@ export class Game extends Scene
         this.MoveEnemy(this.enemy, -1);
 
         // Make enemy fire
-        this.enemyFire(time);            
+        this.enemyFire(this.enemy,time);            
     }
 
+    // End game function with fade out and call to refresh page (restart application)
     endGame = () => {
         this.cameras.main.fadeOut(1500, 0, 0, 0);
 
