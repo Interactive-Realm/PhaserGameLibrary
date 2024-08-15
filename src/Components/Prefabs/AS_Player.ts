@@ -5,6 +5,7 @@ export default class PlayerPrefab extends Phaser.Physics.Arcade.Sprite
 	public health: number;
 	public lastFired: number;
 	public prefabBody: Physics.Arcade.Body;
+	public invincible: boolean;
 	constructor(scene: Phaser.Scene, x: number, y: number, image: string)
 	{
 		super(scene, x, y, image)
@@ -12,6 +13,12 @@ export default class PlayerPrefab extends Phaser.Physics.Arcade.Sprite
 		this.scene.add.existing(this);
 		this.scene.physics.world.enable(this);
 		this.prefabBody = this.body as Physics.Arcade.Body;
+		this.invincible = false;
+	}
+
+	public SetInvicible = () => {
+		this.invincible = !this.invincible;
+		console.log(this.invincible);
 	}
 
 	// SetupPlayer() {

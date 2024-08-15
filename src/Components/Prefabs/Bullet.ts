@@ -6,9 +6,9 @@ export default class Bullet extends Phaser.GameObjects.Image
     xSpeed: number;
     ySpeed: number;
 
-    constructor (scene: Phaser.Scene)
+    constructor (scene: Phaser.Scene, texture: string)
     {
-        super(scene, 0, 0, 'bullet');
+        super(scene, 0, 0, texture);
         this.speed = 0.5;
         this.born = 0;
         this.direction = 0;
