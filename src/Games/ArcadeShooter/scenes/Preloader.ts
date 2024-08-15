@@ -50,6 +50,8 @@ export class Preloader extends Scene
 
         this.load.image('bullet', 'bullet_placeholder.png');
 
+        this.load.image('hp','hearts.png');
+
 
         //this.load.image('player', 'ArcadeFighter_PlayerSprite.png');
         this.load.image('player', 'ArcadeFighter_PlayerSprite.png');

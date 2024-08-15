@@ -33,6 +33,10 @@ export class Game extends Scene
     enemyBullets: Physics.Arcade.Group;
     enemies: Physics.Arcade.Group;
 
+    hp1: any;
+    hp2: any;
+    hp3: any;
+
     constructor ()
     {
         super('Game');
@@ -88,7 +92,10 @@ export class Game extends Scene
             });
 
         //this.time.addEvent({delay: Phaser.Math.Between(100,5000), callback: this.SpawnEnemy,callbackScope:"1",repeat:10})
-            
+        this.hp1 = this.add.image(50, 100, 'hp').setScale(0.1);
+        this.hp2 = this.add.image(100, 100, 'hp').setScale(0.1);
+        this.hp3 = this.add.image(150, 100, 'hp').setScale(0.1);
+        
     }
 
     SetupUI(){
@@ -144,25 +151,26 @@ export class Game extends Scene
     playerHitCallback (playerHit: any, bulletHit: any)
     {
         // Reduce health of player
-        if (bulletHit.active === true && playerHit.active === true)
+        if (bulletHit.active === true && playerHit.active === true && this.player.invincible == false)
         {
             
             playerHit.health = playerHit.health - 1;
+            this.PlayerInvincibility();
             if(playerHit.health == 0) playerHit.destroy();
             console.log('Player hp: ', playerHit.health);
 
             // Kill hp sprites and kill player if health <= 0
             if (playerHit.health === 2)
             {
-                //this.hp3.destroy();
+                this.hp3.destroy();
             }
             else if (playerHit.health === 1)
             {
-                //this.hp2.destroy();
+                this.hp2.destroy();
             }
             else
             {
-                //this.hp1.destroy();
+                this.hp1.destroy();
                 this.endGame();
 
                 // Game over state should execute here
@@ -171,6 +179,18 @@ export class Game extends Scene
             // Destroy bullet
             bulletHit.setActive(false).setVisible(false);
         }
+    }
+
+    PlayerInvincibility(){
+        this.player.SetInvicible();
+        this.player.setVisible(false);
+        this.time.addEvent({delay: 500, callback: this.PlayerBlink, repeat: 6})
+        this.time.addEvent({delay: 3000, callback: this.player.SetInvicible.bind(this)})
+
+    }
+
+    PlayerBlink = () => {
+        this.player.setVisible(!this.player.visible);
     }
 
     enemyFire (time: number)
