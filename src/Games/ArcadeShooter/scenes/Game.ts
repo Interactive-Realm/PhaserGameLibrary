@@ -5,6 +5,7 @@ import PlayerMovement from '../../../Components/Functions/PlayerMovement.ts';
 import EnemyPrefab from '../../../Components/Prefabs/AS_Enemy.ts';
 import Bullet from '../../../Components/Prefabs/Bullet.ts'
 import PowerUp from '../../../Components/Prefabs/PowerUp.ts';
+import { useCallback } from 'react';
 
 export class Game extends Scene
 {
@@ -14,6 +15,7 @@ export class Game extends Scene
     gameText: Phaser.GameObjects.Text;
 
     // Screen Definitions
+    private screenCenter: Phaser.Math.Vector2;
     private screenCenterX: number;
     private screenCenterY: number;
     private screenWidth: number;
@@ -38,6 +40,8 @@ export class Game extends Scene
     hp2: Phaser.GameObjects.Image; // Middle HP Icon
     hp3: Phaser.GameObjects.Image; // Right most HP Icon
 
+    curPath: Phaser.Curves.Path;
+
     constructor ()
     {
         super('Game');
@@ -46,8 +50,11 @@ export class Game extends Scene
     preload() {
         
         // Center of screen
+        this.screenCenter =  new Phaser.Math.Vector2;
         this.screenCenterX = (this.sys.game.config.width as number) / 2;
         this.screenCenterY = (this.sys.game.config.height as number) / 2;
+        this.screenCenter.x = this.screenCenterX;
+        this.screenCenter.y = this.screenCenterY;
 
         // Screen edges, right and bottom
         this.screenWidth = this.sys.game.config.width as number;
@@ -59,6 +66,11 @@ export class Game extends Scene
         // Set Enemy Speed
         this.enemyMoveSpeed = 200;
 
+        // Define enemy array
+        this.enemies = this.physics.add.group();
+
+        this.curPath;
+
     }
 
     create(){
@@ -67,23 +79,86 @@ export class Game extends Scene
         this.SpawnPlayer();
 
         // Spawn test enemy
-        this.SpawnEnemy(2);
+        //this.SpawnEnemy(2, this.screenCenter);
 
         // Setup UI
         this.SetupUI();
         
         // Spawn Test Power Up
-        this.SpawnPowerUp();
+        //this.SpawnPowerUp();
 
-        //this.WaveIntro(1);
+        this.WaveIntro(1);
+
+        this.curPath = this.createZigZagPath();
+        
+    }
+
+    EnemyFollowPath(enemy: EnemyPrefab, path: Phaser.Curves.Path){
+
+        const graphics = this.add.graphics({
+            fillStyle: { color: 0xffff00, alpha: 0.6 },
+            lineStyle: { width: 2, color: 0x0000ff, alpha: 0.6 }
+        });
+
+        const start = path.getStartPoint();
+        const distance = path.getLength();
+        const duration = 35000;
+        const speed = distance / duration;
+        const speedSec = 1000 * speed;
+        const tSpeed = 1 / duration;
+        const tSpeedSec = 1000 * tSpeed;
+
+        let t = 0;
+        
+
+        // const follower = this.add.follower(path,0,0,enemy.texture)
+        // follower.startFollow({
+        //     positionOnPath: true,
+        // duration: 3000,
+        // yoyo: false,
+        // repeat: 0,
+        // rotateToPath: false
+
+        // })
+        
+        this.physics.world.on('worldstep', (delta: number) =>
+            {
+
+                t += delta * tSpeedSec;
+
+                if (t > 1)
+                    {
+                        t -= 1;
+                        enemy.prefabBody.reset(start.x, start.y);
+                        graphics.clear();
+                        path.draw(graphics);
+                        console.log("Test")
+                    }
+                
+                path.getTangent(t, enemy.prefabBody.velocity);
+                enemy.prefabBody.velocity.scale(speedSec);
+                //this.enemy.setRotation(this.enemy.prefabBody.velocity.angle());
+                graphics.fillPointShape(this.enemy.prefabBody.center, 2);
+            });
+
+        
+
+
     }
 
     SetupUI(){
 
         // Setup Player HP UI
-        this.hp1 = this.add.image(50, 100, 'hp').setScale(0.1);
-        this.hp2 = this.add.image(100, 100, 'hp').setScale(0.1);
-        this.hp3 = this.add.image(150, 100, 'hp').setScale(0.1);
+        const hpRef = [];
+        this.hp1 = this.add.image(50, 100, 'hp').setScale(0.1).setSize(50,50);
+        this.hp2 = this.add.image(0, 0, 'hp').setScale(0.1).setSize(50,50);
+        this.hp3 = this.add.image(0, 0, 'hp').setScale(0.1).setSize(50,50);
+
+        hpRef.push(this.hp1);
+        hpRef.push(this.hp2);
+        hpRef.push(this.hp3);
+
+        Phaser.Actions.AlignTo(hpRef, Phaser.Display.Align.RIGHT_CENTER)
 
         // Setup Scoreboard UI
 
@@ -144,14 +219,12 @@ export class Game extends Scene
                 if (this.player.active === false) { return; }
 
                 // Get bullet from bullets group
-                const bullet = this.playerBullets.get(0,0,'bullet').setActive(true).setVisible(true);
-                const bulletImg = bullet as GameObjects.Image
-                bulletImg.setTexture('bullet').setScale(3);
+                const bullet = this.playerBullets.get(0,0,'bullet','bullet').setActive(true).setVisible(true);
 
                 if (bullet)
                 {
                     bullet.fire_straight(this.player,-1);
-                    this.physics.add.collider(this.enemies, bullet, (enemyHit, bulletHit) => this.enemyHitCallback(enemyHit, bulletHit));
+                    this.physics.add.collider(this.enemies, bullet, (bulletHit, enemyHit) => this.enemyHitCallback(enemyHit as EnemyPrefab, bulletHit  ));
                 }
             });
 
@@ -159,7 +232,7 @@ export class Game extends Scene
     }
 
     // Spawns enemy
-    SpawnEnemy(enemyType: number){
+    SpawnEnemy(enemyType: number, location: Phaser.Math.Vector2){
         
         console.log("Spawned enemy type " + enemyType)
         let img;       
@@ -179,14 +252,13 @@ export class Game extends Scene
         }
             
         //Create new enemy from PlayerPefab class and add to scene
-        this.enemy = new EnemyPrefab(this, this.screenWidth/2, 400, img as string).setScale(0.1);
-
-        this.enemy.enemyType = enemyType;
+        this.enemy = new EnemyPrefab(this, location.x, location.y, img as string, enemyType).setScale(0.1);
 
         // Add physics and collision
         this.enemies = this.physics.add.group(this.enemy);
+
         // Add function to kill enemy on player collision
-        this.physics.add.collider(this.player, this.enemy, (playerHit, enemyHit) => this.playerCollisionCallback(this.enemy));       
+        this.physics.add.overlap(this.player, this.enemy, (playerHit, enemyHit) => this.playerCollisionCallback(this.enemy));       
 
         // Create group for all enemy bullets (to ensure they only damage the player)
         this.enemyBullets = this.physics.add.group({ key: 'bullet', classType: Bullet, runChildUpdate: true });
@@ -220,10 +292,12 @@ export class Game extends Scene
 
     ExecuteWave(waveNumber: number){
 
-        for(let i = 0; i <= 10; i++)
-        {
-            this.SpawnEnemy(Phaser.Math.Between(1,3))
-        }
+        let curEnemy: EnemyPrefab;
+        console.log(this.curPath.getStartPoint())
+        this.time.addEvent({delay: 3000, callback: () => {
+            curEnemy = this.SpawnEnemy(Phaser.Math.Between(1,3), new Phaser.Math.Vector2(this.curPath.getStartPoint()));
+            this.EnemyFollowPath(curEnemy, this.curPath)
+        },repeat: 10})
         
     }
 
@@ -243,22 +317,12 @@ export class Game extends Scene
     }
 
     // Callback function for when enemy has been hit by bullet
-    enemyHitCallback (enemyHit: any, bulletHit: any)
+    enemyHitCallback (enemyHit: EnemyPrefab,bulletHit: any )
     {
         // Reduce health of enemy
         if (bulletHit.active === true && enemyHit.active === true)
         {
-            enemyHit.health -= 1;
-
-            // Kill enemy if health <= 0
-            if (enemyHit.health <= 0)
-            {
-                enemyHit.destroy();
-            }
-
-            // // Call enemy hit function on enemyPrefab
-            // const enemyPrefab = enemyHit as EnemyPrefab;            
-            // enemyPrefab.EnemyHit();
+            enemyHit.EnemyHit();
 
             // Destroy bullet
             bulletHit.destroy();
@@ -325,6 +389,38 @@ export class Game extends Scene
 
         // Make enemy fire
         //this.enemyFire(this.enemy,time);            
+    }
+
+    createZigZagPath ()
+    {
+        const path = new Phaser.Curves.Path(this.screenWidth-100, this.screenHeight-1000);
+
+        //path.lineTo(this.screenWidth-500, this.screenHeight-500);
+        const graphics = this.add.graphics({
+            fillStyle: { color: 0xffff00, alpha: 0.6 },
+            lineStyle: { width: 2, color: 0x0000ff, alpha: 0.6 }
+        });
+        const max = 8;
+        const h = 500 / max;
+
+        for (let i = 0; i < max; i++)
+        {
+            if (i % 2 === 0)
+            {
+                path.lineTo(this.screenWidth-100, 50 + h * (i + 1));
+            }
+            else
+            {
+                path.lineTo(100, 50 + h * (i + 1));
+            }
+        }
+
+        path.lineTo(this.screenCenterX, 650);
+
+        
+        path.draw(graphics);
+
+        return path;
     }
 
     // End game function with fade out and call to refresh page (restart application)
