@@ -5,7 +5,7 @@ export default class EnemyPrefab extends Phaser.Physics.Arcade.Sprite
 	public health: number;
 	public lastFired: number;
 	public prefabBody: Physics.Arcade.Body;
-	enemyType: number;
+	public enemyType: number;
 
 	constructor(scene: Phaser.Scene, x: number, y: number, image: string)
 	{
