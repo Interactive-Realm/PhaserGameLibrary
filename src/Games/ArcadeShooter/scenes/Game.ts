@@ -74,6 +74,8 @@ export class Game extends Scene
         
         // Spawn Test Power Up
         this.SpawnPowerUp();
+
+        //this.WaveIntro(1);
     }
 
     SetupUI(){
@@ -159,6 +161,7 @@ export class Game extends Scene
     // Spawns enemy
     SpawnEnemy(enemyType: number){
         
+        console.log("Spawned enemy type " + enemyType)
         let img;       
         switch (enemyType) {
 
@@ -199,11 +202,36 @@ export class Game extends Scene
         this.physics.add.collider(this.player, powerUp, (playerHit) => powerUp.ActivatePowerUp("missle", playerHit as PlayerPrefab));
     }
 
+    WaveIntro(waveNumber: number){
+
+        let waveIntroText = this.add.text(this.screenCenterX,this.screenCenterY,"Wave " + waveNumber,{
+            fontSize: '60px',
+            align: 'center',
+        }).setOrigin(0.5, 0.5).setDepth(2).setStroke('black', 10).setFontFamily('bulkypix');  
+
+
+        this.time.addEvent({delay:3000, callback: () =>{
+            waveIntroText.setVisible(false);
+            this.ExecuteWave(waveNumber);
+            
+        }})
+
+    }
+
+    ExecuteWave(waveNumber: number){
+
+        for(let i = 0; i <= 10; i++)
+        {
+            this.SpawnEnemy(Phaser.Math.Between(1,3))
+        }
+        
+    }
+
     // Callback function for when player has been hit by bullet
     playerHitCallback (playerHit: any, bulletHit: any)
     {
         // Reduce health of player
-        if (bulletHit.active === true && playerHit.active === true && this.player.invincible == false)
+        if (bulletHit.active === true && playerHit.active === true)
         {
             this.player.PlayerHit(); // Removed HP and puts player in invicible state for 3 seconds
 
@@ -220,9 +248,17 @@ export class Game extends Scene
         // Reduce health of enemy
         if (bulletHit.active === true && enemyHit.active === true)
         {
-            // Call enemy hit function on enemyPrefab
-            const enemyPrefab = enemyHit as EnemyPrefab;            
-            enemyPrefab.EnemyHit();
+            enemyHit.health -= 1;
+
+            // Kill enemy if health <= 0
+            if (enemyHit.health <= 0)
+            {
+                enemyHit.destroy();
+            }
+
+            // // Call enemy hit function on enemyPrefab
+            // const enemyPrefab = enemyHit as EnemyPrefab;            
+            // enemyPrefab.EnemyHit();
 
             // Destroy bullet
             bulletHit.destroy();
@@ -270,7 +306,7 @@ export class Game extends Scene
     // REMOVE THIS
     MoveEnemy(enemy: EnemyPrefab, direction: number) {
 
-        if(enemy.enemyType === 1) return;
+        //if(enemy.enemyType === 1) return;
         //console.log(this.enemy.x);
         if(enemy == null) return;
         if(enemy.x >= this.screenWidth) {
@@ -285,10 +321,10 @@ export class Game extends Scene
     
     update(time: number, delta: number){
 
-        this.MoveEnemy(this.enemy, -1);
+        //this.MoveEnemy(this.enemy, -1);
 
         // Make enemy fire
-        this.enemyFire(this.enemy,time);            
+        //this.enemyFire(this.enemy,time);            
     }
 
     // End game function with fade out and call to refresh page (restart application)
