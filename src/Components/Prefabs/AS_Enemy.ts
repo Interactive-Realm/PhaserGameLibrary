@@ -7,9 +7,11 @@ export default class EnemyPrefab extends Phaser.Physics.Arcade.Sprite
 	public prefabBody: Physics.Arcade.Body;
 	public enemyType: number;
 
-	constructor(scene: Phaser.Scene, x: number, y: number, image: string)
+	constructor(scene: Phaser.Scene, x: number, y: number, image: string, enemyType: number)
 	{
 		super(scene, x, y, image)
+		
+		this.enemyType = enemyType;
 		this.SetupEnemy();
 	}
 
@@ -17,6 +19,7 @@ export default class EnemyPrefab extends Phaser.Physics.Arcade.Sprite
 
 		this.lastFired = 0;
 		this.health = this.enemyType;
+		console.log(this.health);
 		
 		this.scene.add.existing(this);
 
@@ -32,21 +35,24 @@ export default class EnemyPrefab extends Phaser.Physics.Arcade.Sprite
 
 	public EnemyHit(){
 		this.health -= 1;
-		if(this.health = 0) this.KillEnemy();
+		console.log("Enemy HP: " + this.health)
+		if(this.health <= 0) this.KillEnemy();
 	}
 
 	public KillEnemy(){
+		console.log("Enemy Destroyed")
 		this.destroy();
+
 	}
 }
 
-Phaser.GameObjects.GameObjectFactory.register(
-	'enemyprefab',
-	function (this: Phaser.GameObjects.GameObjectFactory, x: number, y: number, image: string) {
-		const playerprefab = new EnemyPrefab(this.scene, x, y, image);
-		this.displayList.add(playerprefab);
-		this.updateList.add(playerprefab);
+// Phaser.GameObjects.GameObjectFactory.register(
+// 	'enemyprefab',
+// 	function (this: Phaser.GameObjects.GameObjectFactory, x: number, y: number, image: string) {
+// 		const playerprefab = new EnemyPrefab(this.scene, x, y, image);
+// 		this.displayList.add(playerprefab);
+// 		this.updateList.add(playerprefab);
 
-		return playerprefab;
-	}
-)
+// 		return playerprefab;
+// 	}
+// )
