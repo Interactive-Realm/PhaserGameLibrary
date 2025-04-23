@@ -1,5 +1,5 @@
 import { Boot } from './scenes/Boot';
-import { GameCountdown } from './scenes/GameCountdown';
+import { GameCountdown } from '../../Components/Screens/GameCountdown'
 import { Game as MainGame } from './scenes/Game';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
