@@ -41,7 +41,7 @@ export class Game extends Scene
 
         // Timer variables
         this.timer;
-        this.initialTime = 5; // in seconds
+        this.initialTime = 30; // in seconds
         this.timerLabel;
 
         // UI variables
@@ -73,15 +73,27 @@ export class Game extends Scene
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x002B5B);
 
-        this.background = this.add.image(512, 384, 'background');
-        this.background.setAlpha(0.2);
-        this.background.flipY=true;
-
-        this.scoreLabel = this.add.text(this.screenWidth - this.score_SideMargin, 0 + this.score_TopMargin, 'SCORE: ' + this.score)
-        .setFontSize(40).setColor('black').setOrigin(0.5, 0.5).setVisible(false);
+        // Initiate Score UI
+        this.scoreLabel = this.add.text(
+            this.screenWidth - this.score_SideMargin, 
+            0 + this.score_TopMargin, 
+            'SCORE: ' + this.score)
+                .setFontSize(40)
+                .setColor('white')
+                .setOrigin(0.5, 0.5)
+                .setVisible(false)
+                .setDepth(100);
         
-        this.timerLabel = this.add.text(0 + this.timeLeft_SideMargin, 0 + this.timeLeft_TopMargin, 'TIME LEFT: ' + this.formatTime(this.initialTime))
-        .setFontSize(40).setColor('black').setOrigin(0.5, 0.5).setVisible(false);
+        // Initiate Timer UI
+        this.timerLabel = this.add.text(
+            0 + this.timeLeft_SideMargin, 
+            0 + this.timeLeft_TopMargin, 
+            'TIME LEFT: ' + this.formatTime(this.initialTime))
+                .setFontSize(40)
+                .setColor('white')
+                .setOrigin(0.5, 0.5)
+                .setVisible(false)
+                .setDepth(100);
 
          // Tutorial text objects
          const tutorialText1 = this.add.text(this.screenCenterX, 510, 'This is how you play:', {
@@ -110,11 +122,10 @@ export class Game extends Scene
             tutorialText1.destroy();
             tutorialText2.destroy();
             startButton.destroy();
-            //this.scene.launch('gamecountdown');
             if(this.introCountdownEnabler === false) {
             this.gameStarted = true;
             this.scoreLabel.setVisible(true);
-            this.startCountdown();
+            this.startGameTimer();
             }
             else {
                 this.scene.launch('GameCountdown')
@@ -133,27 +144,14 @@ export class Game extends Scene
             }, this);
         }
         
+        // Intro Countdown Event
         EventBus.on('introCountdown_HasRun', (data: boolean) => {
             console.log("GameScene: countdown ended!");
             if (data === true) {
-                this.gameStarted = true;
-                this.scoreLabel.setVisible(true);
-                this.startCountdown();
+                this.StartGame();
             }
         });
-        //EventBus.emit('current-scene-ready', this);
     }
-
-    // Receive data from game countdown, then start the game
-    // receiveData(data: boolean) {
-    //     console.log("countdown ended!");
-    //     if (data === true) {
-    //         this.gameStarted = true;
-    //         this.scoreLabel = this.add.text(this.screenWidth - this.score_SideMargin, 0 + this.score_TopMargin, 'SCORE: ' + this.score)
-    //         .setFontSize(40).setColor('black').setOrigin(0.5, 0.5);
-    //         this.startCountdown();
-    //     }
-    // }
 
     update(time: number, delta: number) {
         if (this.gameStarted === true) {
@@ -169,6 +167,12 @@ export class Game extends Scene
             this.spawnBubbleObject();
             this.lastBubbleSpawnTime = time;
         }
+    }
+
+    StartGame(){
+        this.gameStarted = true;
+        this.scoreLabel.setVisible(true);
+        this.startGameTimer();
     }
 
     // Bubble spawner
@@ -246,7 +250,7 @@ export class Game extends Scene
         });
     }
 
-    startCountdown() {
+    startGameTimer() {
         console.log("starting countdown!");
         // Display the initial time
         
