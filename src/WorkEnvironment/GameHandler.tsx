@@ -20,7 +20,7 @@ const PhaserGame: React.FC<Props> = ({ setScreen }) =>
         if (game.current === null && gameEnd == false)
         {
 
-            game.current = StartGameArcadeShooter("game-container", true);
+            game.current = StartGameOcean("game-container", true);
         }
 
 
