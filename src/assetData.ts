@@ -6,7 +6,7 @@ export function pathSelector(custom: boolean) {
     // }
 
     if(custom === true) {
-        pathRef = "src/Games/ArcadeShooter/assets";
+        pathRef = "../assets";
         console.log("loading public/assets from preloader");
     }
     

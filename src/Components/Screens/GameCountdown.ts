@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { EventBus } from '../EventBus';
+import { EventBus } from '../../EventBus';
 
 export class GameCountdown extends Phaser.Scene {
     private countdownText!: Phaser.GameObjects.Text;
@@ -31,10 +31,6 @@ export class GameCountdown extends Phaser.Scene {
         });
 
         this.countDownEnded = false;
-    }
-
-    update() {
-        // Your game logic goes here
     }
 
     updateCountdown() {
