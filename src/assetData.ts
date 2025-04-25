@@ -7,13 +7,13 @@ export function pathSelector(custom: boolean) {
 
     if(custom === true) {
         pathRef = "../assets";
-        console.log("loading public/assets from preloader");
     }
     
     else if(custom === false) {
-        pathRef = '/node_modules/@interactive-realm/phasergamelibrary/dist/assets'
-        console.log("loading package assets from preloader");
+        pathRef = '/PhaserGameLibrary/src/Games/SaveTheOcean/assets'
     }
+
+    console.log("loading phaser game assets from " + pathRef);
 }
 
 export let pathRef:string;
