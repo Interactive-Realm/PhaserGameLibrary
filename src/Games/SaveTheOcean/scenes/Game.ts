@@ -41,7 +41,7 @@ export class Game extends Scene
 
         // Timer variables
         this.timer;
-        this.initialTime = 30; // in seconds
+        this.initialTime = 1; // in seconds
         this.timerLabel;
 
         // UI variables
@@ -255,6 +255,7 @@ export class Game extends Scene
         // Display the initial time
         
         this.timerLabel.setVisible(true);
+
         // Create a countdown timer
         this.timer = this.time.addEvent({
             delay: 1000, // 1 second
@@ -269,33 +270,24 @@ export class Game extends Scene
         this.timerLabel.setText('TIME LEFT: ' + this.formatTime(this.timer.repeatCount));
 
         // Check if the timer has reached 0
-        if (this.timer.repeatCount === 0) {
-            this.gameStarted = false;
-            this.cameras.main.fadeOut(1000, 0, 0, 0);
-            this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-                // Add delay before end screen
-                this.time.addEvent({
-                    delay: 500,
-                    callback: () =>{
-                        this.endGame();
-                    },
-                    loop: false
-                })
-                
-            })
+        if (this.timer.repeatCount === 0) {            
+            this.endGame();
         }
     }
 
     endGame = () => {
+        // Camera Fadeout
         this.cameras.main.fadeOut(1500, 0, 0, 0);
 
         console.log("game ended! Your Score: " + this.score);
-        EventBus.emit('score', this.score);
+
+        // Reset Variables
+        this.gameStarted = false;
 
         this.time.addEvent({
             delay: 2000, 
             callback: function() {
-                EventBus.emit('gameHasEnded', true);
+                EventBus.emit('gameHasEnded', true, );
             },
             callbackScope: this,
             loop: false
