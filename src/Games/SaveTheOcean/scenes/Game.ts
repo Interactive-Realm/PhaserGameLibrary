@@ -280,6 +280,7 @@ export class Game extends Scene
         this.cameras.main.fadeOut(1500, 0, 0, 0);
 
         console.log("game ended! Your Score: " + this.score);
+        EventBus.emit('score', this.score);
 
         // Reset Variables
         this.gameStarted = false;
@@ -288,6 +289,7 @@ export class Game extends Scene
             delay: 2000, 
             callback: function() {
                 EventBus.emit('gameHasEnded', true, );
+                
             },
             callbackScope: this,
             loop: false
