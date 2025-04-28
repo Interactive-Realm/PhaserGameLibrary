@@ -41,7 +41,7 @@ export class Game extends Scene
 
         // Timer variables
         this.timer;
-        this.initialTime = 1; // in seconds
+        this.initialTime = 10; // in seconds
         this.timerLabel;
 
         // UI variables
