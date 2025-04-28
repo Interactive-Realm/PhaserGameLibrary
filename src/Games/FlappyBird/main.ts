@@ -28,7 +28,7 @@ const config: Phaser.Types.Core.GameConfig = {
 
 const StartGame = (parent: string, customAssets: boolean) => {
 
-    pathSelector(customAssets);
+    pathSelector(customAssets, "FlappyBird");
     return new Phaser.Game({ ...config, parent });
 
 }

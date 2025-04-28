@@ -30,7 +30,7 @@ const config: Phaser.Types.Core.GameConfig = {
 
 const StartGame = (parent: string, customAssets: boolean) => {
 
-    pathSelector(customAssets);
+    pathSelector(customAssets, "SaveTheOcean");
     return new Game({ ...config, parent });
 
 }

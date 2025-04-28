@@ -25,7 +25,7 @@ const config: Phaser.Types.Core.GameConfig = {
 
 const StartGame = (parent: string, customAssets: boolean) => {
 
-    pathSelector(customAssets);
+    pathSelector(customAssets, "SoapboxShowdown");
     return new Game({ ...config, parent });
     
 }

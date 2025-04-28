@@ -1,4 +1,4 @@
-export function pathSelector(custom: boolean) {
+export function pathSelector(custom: boolean, location: string) {
 
     // if(custom === true) {
     //     pathRef = "assets";
